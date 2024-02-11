@@ -16,13 +16,73 @@ The whole architecture leans on the idea of a single source of truth for data fl
 
 Its worth to mention ViewComponents here as well. They are only responsible for passing the Router its required dependencies. They do not maintain a dependency graph.
 
-        `public protocol SomeComponent: Component {     var depA: DepA { get }   }    public class SomeComponentImpl: Component, RootComponent {     public var depA: DepA { DepA() }   }`  
-        
-        
+```
+public protocol SomeComponent: Component {     
+    var depA: DepA { get }   
+}    
+
+public class SomeComponentImpl: Component, RootComponent {    
+    public var depA: DepA { DepA() }   
+}
+```  
 
 Dependency lookup is done by traversing the component tree. This is done by using the parentComponent property and using breadth first search. Because dependencies are looked up at runtime using dynamicMemberLookup, this code is necessarily compile time enforced. This means that if a dependency variable name doesn't match directly or the dependency isn't in the tree it will crash at runtime. Dependencies are cached at their respective components to avoid unnecessary lookups.
 
-          `public protocol ComponentProviding: AnyObject, ModuleComponent {     subscript(dynamicMember member: String) -> T { get }   }    @dynamicMemberLookup   public class Component: ComponentProviding {     public let parent: Component?      private var cachedProperties: [String: Any] = [:]          public init(parent: Component?) {       self.parent = parent     }      public subscript(dynamicMember member: String) -> T {       if let cached = cachedProperties[member], let val = cached as? T {         return val       }              var component: Component? = self              var tree: String = ""              while let comp = component {         tree += "\(tree.isEmpty ? "" : " -> ")\(String(describing: comp))"                  let mirror = Mirror(reflecting: comp)                  for c in mirror.children {           if c.label == member, let value = c.value as? T {             cachedProperties[member] = value             return value           }         }                  component = component?.parent       }          fatalError("Cannot find \(member): \(String(describing: T.self)) in component graph: \(tree) ")     }   }`
+```
+public protocol ComponentProviding: AnyObject, ModuleComponent {
+  var parent: Component? { get }
+  subscript<T>(dynamicMember member: String) -> T { get }
+}
+
+@dynamicMemberLookup
+public class Component: ComponentProviding {
+  public let parent: Component?
+
+  private var sharedDependencies: [String: Any] = [:]
+  private var cachedProperties: [String: Any] = [:]
+  
+  public init(parent: Component?) {
+    self.parent = parent
+  }
+
+  public subscript<T>(dynamicMember member: String) -> T {
+    if let cached = cachedProperties[member], let val = cached as? T {
+      return val
+    }
+    
+    var component: Component? = self
+    
+    var tree: String = ""
+    
+    while let comp = component {
+      tree += "\(tree.isEmpty ? "" : " -> ")\(String(describing: comp))"
+      
+      let mirror = Mirror(reflecting: comp)
+      
+      for c in mirror.children {
+        if c.label == member, let value = c.value as? T {
+          cachedProperties[member] = value
+          return value
+        }
+      }
+      
+      component = component?.parent
+    }
+
+    fatalError("Cannot find \(member): \(String(describing: T.self)) in component graph: \(tree) ")
+  }
+  
+  public func shared<T>(_ block: () -> T) -> T {
+    if let oldDep = sharedDependencies[String(describing: T.self)] {
+      return oldDep as? T ?? block()
+    }
+    
+    let dep = block()
+    sharedDependencies[String(describing: T.self)] = dep
+    return dep
+  }
+}
+```
         
         
 
@@ -31,8 +91,29 @@ Builder
 
 The builder is responsible for creating the Module and Router. It is passed the parent Component, the ModuleHolder, as well as the ModuleHolderContext. It will use those to contruct the module, router, and component dependency graph.
 
-            `public protocol SomeModuleBuilding: ViewBuilding, ModuleBuilder {   }    public struct SomeModuleBuilder: SomeModuleBuilding {     public func buildRouter(component: T) -> R? where T : ViewComponent, R : Routing {       guard let c = component as? SomeViewComponentImpl else { return nil }       return SomeModuleRouter(component: c) as? R     }          public func build(parentComponent: Component,                       holder: SomeModuleHolder?,                       context: SomeModuleHolderContext) -> SomeModule {              let component = SomeModuleComponentImpl(parent: parentComponent,                                               depA: parentComponent.depA)              let module = SomeModule(holder: holder, context: context, component: component)              let viewComponent = SomeViewComponentImpl(module: module, moduleHolder: holder)              module.router = buildRouter(component: viewComponent)              return module     }   }`
-      
+```
+public protocol SomeModuleBuilding: ViewBuilding, ModuleBuilder {   }    
+
+public struct SomeModuleBuilder: SomeModuleBuilding {     
+    public func buildRouter(component: T) -> R? where T : ViewComponent, R : Routing {       
+        guard let c = component as? SomeViewComponentImpl else { return nil }       
+        return SomeModuleRouter(component: c) as? R     
+    }          
+
+    public func build(parentComponent: Component,                       
+                      holder: SomeModuleHolder?,                       
+                      context: SomeModuleHolderContext) -> SomeModule { 
+
+        let component = SomeModuleComponentImpl(parent: parentComponent,                                               
+                                                depA: parentComponent.depA)        
+        let module = SomeModule(holder: holder, context: context, component: component)    
+        let viewComponent = SomeViewComponentImpl(module: module, moduleHolder: holder)         
+        module.router = buildRouter(component: viewComponent)             
+        return module  
+
+    }  
+}
+```
       
 
 Module
