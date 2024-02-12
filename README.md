@@ -202,9 +202,7 @@ public class SomeMOduleRouter: SomeModuleRouting, Logger {
 ModuleHolder
 ============
 
-The introduction of the ModuleHolder is what I think makes this architecture unique. The ModuleHolder is a class that is a Module itself but also can contain other Modules. This allows for a module and router tree to be created allowing for any module or router to call any other module or router up the tree without having it injected as a dependency. This maintains the testability of the modules and routers. Without getting too much into the specific of the implementation, the ModuleHolder uses dynamicMemberLookup and specific SupportedModule enum to look up the module in its supportedModules array.
-
-It's important that the SupportedModule `enum` you use here matches the `supportModule` key in the `Module` definition. 
+The introduction of the ModuleHolder is what I think makes this architecture unique. The ModuleHolder is a class that is a Module itself but also can contain other Modules. This allows for a module and router tree to be created allowing for any module or router to call any other module or router up the tree without having it injected as a dependency. This maintains the testability of the modules and routers. Just specify the class of module you want from the tree and it will search through the branches and find the closest one. If there are more than one of that type it will take the one closest to the caller in the tree.
 
 ```
   public struct SomeModuleHolderContext: ModuleHolderContext {
@@ -255,11 +253,11 @@ open class ModuleHolder: ModuleHolding {
     self.holder = holder
   }
   
-  public subscript<T>(dynamicMember member: String) -> T? {
+  public subscript<T, M: Module>(dynamicMember member: M.Type) -> T? where T : Module {
     var holder: ModuleHolding? = self
     while holder != nil {
       
-      if let m: T = holder?.supportedModules.first(where: { $0.key == member }) as? T {
+      if let m: T = holder?.supportedModules.first(where: { $0 is M }) as? T {
         return m
       }
       
@@ -269,17 +267,17 @@ open class ModuleHolder: ModuleHolding {
     return nil
   }
 
-  public func module<T, R: RawRepresentable<String>>(for id: R) -> T? {
-    let t: T? = self[dynamicMember: id.rawValue]
+  public func module<M: Module>(for id: M.Type) -> M? {
+    let t: M? = self[dynamicMember: id]
     return t
   }
   
-  public func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T? {
-    let t: M? = self[dynamicMember: id.rawValue]
-    let r = t as? (any Module)
-    return r?.router as? T
+  public func router<M: Module>(for id: M.Type) -> M.Router? {
+    let t: M? = self[dynamicMember: id]
+    return t?.router as? M.Router
   }
 }
+
 ```
     
     
