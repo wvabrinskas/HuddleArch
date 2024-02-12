@@ -121,8 +121,40 @@ Module
 
 Modules contain code specific to their feature use case. This makes them highly testable since you only need to inject the required dependencies to build them as they are standalone. The only visible functions when this module is referenced are the ones in defined in its supporting protocol.
 
-        `public protocol SomeModuleComponent: Component {     var depA: DepA { get }   }    public class SomeModuleComponentImpl: Component, SomeModuleComponent {     public var depA: DepA          public init(parent: Component?,                 depA: DepA) {       self.depA = depA       super.init(parent: parent)     }   }    public protocol SomeModuleSupporting {     // public facing functions for the module   }    public final class SomeModule: SomeModuleSupporting, Module {     public weak var holder: ModuleHolder?     public var router: SomeRouter?     public let key: SupportedModules = .someModule          private let depA: DepA          public init(holder: ModuleHolder?, context: SomeModuleHolderContext, component: SomeModuleComponent) {       self.holder = holder       depA = component.depA     }          // public facing functions for the module   }`
-        
+```
+public protocol SomeModuleComponent: Component {  
+    var depA: DepA { get }  
+}    
+
+public class SomeModuleComponentImpl: Component, SomeModuleComponent {
+    public var depA: DepA          
+    public init(parent: Component?,                 
+                depA: DepA) {       
+        self.depA = depA       
+        super.init(parent: parent)     
+    }   
+}    
+
+public protocol SomeModuleSupporting {     
+    // public facing functions for the module   
+}   
+
+public final class SomeModule: ModuleObject<ParentModuleContext, SomeModuleComponentImpl, Router: SomeRouter>,SomeModuleSupporting {   
+    public weak var holder: ModuleHolder?    
+    public var router: SomeRouter?    
+    public let key: SupportedModules = .someModule          
+    private let depA: DepA    
+
+         
+    public init(holder: ModuleHolder?, context: SomeModuleHolderContext, component: SomeModuleComponent) { 
+        self.holder = holder       
+        depA = component.depA     
+    }         
+
+    // public facing functions for the module  
+}
+```
+
         
 
 Router
