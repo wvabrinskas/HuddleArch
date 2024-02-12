@@ -164,22 +164,123 @@ What you'll see as you read this is that the Router example uses SwiftUI. This i
 
 The Router is responsible for providing a UI for the Module. It contains routes for the UI to navigate to if there are actions taken by the user in the UI. A module is not required to have a router if there is no user facing actions required.
 
-          `public protocol SomeViewComponent: ViewComponent {     var module: SomeModuleSupporting { get }     var moduleHolder: ModuleHolder? { get }   }    public struct SomeViewComponentImpl: SettingsViewComponent {     public var module: SettingsSupporting     public var moduleHolder: ModuleHolder?   }    public protocol SomeModuleRouting: Routing {}    public class SomeMOduleRouter: SomeModuleRouting, Logger {          public var logLevel: LogLevel = .high     private let moduleHolder: SomeModuleHolder?     private let component: SomeViewComponent          public init(component: SomeViewComponent) {       self.component = component       self.moduleHolder = component.moduleHolder as? SomeModuleHolder       if moduleHolder == nil {         log(type: .message, message: "No valid ModuleHolder to be found in \(#file)")       }     }          public func rootView() -> any View {       SomeRootView()     }   }`
+```
+public protocol SomeViewComponent: ViewComponent {
+  var module: SomeModuleSupporting { get }
+  var moduleHolder: ModuleHolder? { get }
+}
+
+public struct SomeViewComponentImpl: SettingsViewComponent {
+  public var module: SettingsSupporting
+  public var moduleHolder: ModuleHolder?
+}
+
+public protocol SomeModuleRouting: Routing {}
+
+public class SomeMOduleRouter: SomeModuleRouting, Logger {
+  
+  public var logLevel: LogLevel = .high
+  private let moduleHolder: SomeModuleHolder?
+  private let component: SomeViewComponent
+  
+  public init(component: SomeViewComponent) {
+    self.component = component
+    self.moduleHolder = component.moduleHolder as? SomeModuleHolder
+    if moduleHolder == nil {
+      log(type: .message, message: "No valid ModuleHolder to be found in \(#file)")
+    }
+  }
+  
+  public func rootView() -> any View {
+    SomeRootView()
+  }
+}
+```
         
         
 
 ModuleHolder
 ============
 
-The introduction of the ModuleHolder is what I think makes this architecture unique. The ModuleHolder is a class that is a Module itself but also can contain other Modules. This allows for a module and router tree to be created allowing for any module or router to call any other module or router up the tree without having it injected as a dependency. This maintains the testability of the modules and routers. Without getting too much into the specific of the implementation, the ModuleHolder uses dynamicMemberLookup and specific SupportedModuleKey enum to look up the module in its supportedModules array.
+The introduction of the ModuleHolder is what I think makes this architecture unique. The ModuleHolder is a class that is a Module itself but also can contain other Modules. This allows for a module and router tree to be created allowing for any module or router to call any other module or router up the tree without having it injected as a dependency. This maintains the testability of the modules and routers. Without getting too much into the specific of the implementation, the ModuleHolder uses dynamicMemberLookup and specific SupportedModule enum to look up the module in its supportedModules array.
 
-        `public struct SomeModuleHolderContext: ModuleHolderContext {     public var parent: ModuleHolderContext? = nil   }    @dynamicMemberLookup   public class SomeModuleHolder: RootModule, Module, ModuleHolder {          public let holder: ModuleHolder? = nil     public typealias Context = SomeModuleHolderContext     public typealias Router = SomeRouter            public var key: SupportedModules = .some     public var router: Router?          public var supportedModules: [any Module] = []          private let component: SomeComponent          public required init(holder: ModuleHolder? = nil, context: RootModuleHolderContext, component: RootComponent) {       self.component = component       supportedModules = [         // Some modules here         // SomeModuleBuilder().build(parentComponent: component, holder: self, context: context)       ]              router = SomeBuilder().buildRouter(component: SomeViewComponentImpl(moduleHolder: self,                                                                           depA: component.depA))     }          public func routeToRootView() -> any View {       router?.rootView() ?? ErrorView()     }   }`
+It's important that the SupportedModule `enum` you use here matches the `supportModule` key in the `Module` definition. 
+
+```
+  public struct SomeModuleHolderContext: ModuleHolderContext {
+    public var parent: ModuleHolderContext? = nil
+  }
+
+  @dynamicMemberLookup
+  public class SomeModuleHolder: RootModule, Module, ModuleHolder {
+    
+    public let holder: ModuleHolder? = nil
+    public typealias Context = SomeModuleHolderContext
+    public typealias Router = SomeRouter
+      
+    public var key: SupportedModules = .some
+    public var router: Router?
+    
+    public var supportedModules: [any Module] = []
+    
+    private let component: SomeComponent
+    
+    public required init(holder: ModuleHolder? = nil, context: RootModuleHolderContext, component: RootComponent) {
+      self.component = component
+      supportedModules = [
+        // Some modules here
+        // SomeModuleBuilder().build(parentComponent: component, holder: self, context: context)
+      ]
+      
+      router = SomeBuilder().buildRouter(component: SomeViewComponentImpl(moduleHolder: self,
+                                                                          depA: component.depA))
+    }
+    
+    public func routeToRootView() -> any View {
+      router?.rootView() ?? ErrorView()
+    }
+  }
+```
       
       
 
 Module and router lookup is done using breadth first search on the module tree.
 
-        `public extension ModuleHolder {     subscript(dynamicMember member: String) -> T? {       var holder: ModuleHolder? = self       while holder != nil {                  if let moduleKey = SupportedModules(rawValue: member),           let m: T = holder?.supportedModules.first(where: { $0.key == moduleKey }) as? T {           return m         }                  holder = self.holder       }              return nil     }      func module(for id: SupportedModules) -> T? {       let t: T? = self[dynamicMember: id.rawValue]       return t     }          func router(for id: SupportedModules, moduleType: M.Type) -> T? {       let t: M? = self[dynamicMember: id.rawValue]       let r = t as? (any Module)       return r?.router as? T     }    }`
+```
+open class ModuleHolder: ModuleHolding {
+  public var holder: ModuleHolding? = nil
+  public var supportedModules: [any Module] = []
+  
+  public init(holder: ModuleHolding? = nil) {
+    self.holder = holder
+  }
+  
+  public subscript<T>(dynamicMember member: String) -> T? {
+    var holder: ModuleHolding? = self
+    while holder != nil {
+      
+      if let m: T = holder?.supportedModules.first(where: { $0.key == member }) as? T {
+        return m
+      }
+      
+      holder = self.holder
+    }
+    
+    return nil
+  }
+
+  public func module<T, R: RawRepresentable<String>>(for id: R) -> T? {
+    let t: T? = self[dynamicMember: id.rawValue]
+    return t
+  }
+  
+  public func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T? {
+    let t: M? = self[dynamicMember: id.rawValue]
+    let r = t as? (any Module)
+    return r?.router as? T
+  }
+}
+```
     
     
 

@@ -10,9 +10,9 @@ import Foundation
 public protocol ModuleHolding: AnyObject {
   var holder: ModuleHolding? { get }
   var supportedModules: [any Module] { get set }
-  subscript<T>(dynamicMember member: String) -> T? where T : Module { get }
-  func module<T, R: RawRepresentable<String>>(for id: R) -> T?
-  func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T?
+  subscript<M: Module>(dynamicMember member: M.Type) -> M? { get }
+  func module<M: Module>(for id: M.Type) -> M?
+  func router<M: Module>(for id: M.Type) -> M.Router?
 }
 
 public protocol ModuleHoldingContext {
@@ -50,11 +50,11 @@ open class ModuleHolder: ModuleHolding {
     self.holder = holder
   }
   
-  public subscript<T>(dynamicMember member: String) -> T? {
+  public subscript<T, M: Module>(dynamicMember member: M.Type) -> T? where T : Module {
     var holder: ModuleHolding? = self
     while holder != nil {
       
-      if let m: T = holder?.supportedModules.first(where: { $0.key == member }) as? T {
+      if let m: T = holder?.supportedModules.first(where: { $0 is M }) as? T {
         return m
       }
       
@@ -64,14 +64,13 @@ open class ModuleHolder: ModuleHolding {
     return nil
   }
 
-  public func module<T, R: RawRepresentable<String>>(for id: R) -> T? {
-    let t: T? = self[dynamicMember: id.rawValue]
+  public func module<M: Module>(for id: M.Type) -> M? {
+    let t: M? = self[dynamicMember: id]
     return t
   }
   
-  public func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T? {
-    let t: M? = self[dynamicMember: id.rawValue]
-    let r = t as? (any Module)
-    return r?.router as? T
+  public func router<M: Module>(for id: M.Type) -> M.Router? {
+    let t: M? = self[dynamicMember: id]
+    return t?.router as? M.Router
   }
 }

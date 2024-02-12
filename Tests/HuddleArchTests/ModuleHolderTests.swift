@@ -10,9 +10,6 @@ import XCTest
 import SwiftUI
 @testable import HuddleArch
 
-public enum SupportedModules: String {
-  case root, settings, peerConnection, feed
-}
 
 protocol TestRootRouting: Routing {}
 class TestRootRouter: TestRootRouting {
@@ -26,8 +23,6 @@ class TestRootContext: ModuleHolderContext {
 }
 
 class TestRootModuleHolder: ModuleHolder, Module {
-  var key: String = SupportedModules.root.rawValue
-  
   var router: TestRootRouter? = TestRootRouter()
 
   public required init(holder: ModuleHolding?,
@@ -57,9 +52,7 @@ class TestModule: ModuleObject<TestRootContext, TestComponent, TestRouter> {
   typealias Context = TestRootContext
   typealias Component = TestComponent
   typealias Router = TestRouter
-  
-  override var key: String { SupportedModules.feed.rawValue }
-    
+      
   public required init(holder: ModuleHolding?, context: TestRootContext, component: TestComponent) {
     super.init(holder: holder, context: context, component: component)
     self.router = TestRouter()
@@ -78,8 +71,6 @@ class TestSecondRootComponent: Component {}
 class TestSecondRootContext: ModuleHolderContext {}
 
 class TestSecondRootModule: ModuleHolder, Module {
-  var key: String = SupportedModules.settings.rawValue
-  
   var router: TestSecondRootRouter? = TestSecondRootRouter()
   
   public required init(holder: ModuleHolding?,
@@ -108,8 +99,6 @@ class TestSecondModule:  ModuleObject<TestSecondRootContext, TestSecondComponent
   typealias Component = TestSecondComponent
   typealias Router = TestSecondRouter
   
-  override var key: String { SupportedModules.peerConnection.rawValue }
-
   public required init(holder: ModuleHolding?,
                        context: TestSecondRootContext,
                        component: TestSecondComponent) {
@@ -126,11 +115,11 @@ public class ModuleHolderTests: XCTestCase {
                                     context: TestRootContext(),
                                     component: TestRootComponent(parent: nil))
     
-    let secondLevelRoot: TestSecondRootModule? = root.module(for: SupportedModules.settings)
+    let secondLevelRoot = root.module(for: TestSecondRootModule.self)
     
     XCTAssertNotNil(secondLevelRoot)
     
-    let feedFromFirst: TestModule? = secondLevelRoot?.module(for: SupportedModules.feed)
+    let feedFromFirst = secondLevelRoot?.module(for: TestModule.self)
     
     XCTAssertNotNil(feedFromFirst)
   }
