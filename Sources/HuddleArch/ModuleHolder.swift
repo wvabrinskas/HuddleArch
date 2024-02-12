@@ -71,6 +71,6 @@ open class ModuleHolder: ModuleHolding {
   
   public func router<M: Module>(for id: M.Type) -> M.Router? {
     let t: M? = self[dynamicMember: id]
-    return t?.router as? M.Router
+    return t?.router
   }
 }

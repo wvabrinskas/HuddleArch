@@ -142,10 +142,8 @@ public protocol SomeModuleSupporting {
 public final class SomeModule: ModuleObject<ParentModuleContext, SomeModuleComponentImpl, Router: SomeRouter>,SomeModuleSupporting {   
     public weak var holder: ModuleHolder?    
     public var router: SomeRouter?    
-    public let key: SupportedModules = .someModule          
     private let depA: DepA    
 
-         
     public init(holder: ModuleHolder?, context: SomeModuleHolderContext, component: SomeModuleComponent) { 
         self.holder = holder       
         depA = component.depA     
@@ -216,7 +214,6 @@ The introduction of the ModuleHolder is what I think makes this architecture uni
     public typealias Context = SomeModuleHolderContext
     public typealias Router = SomeRouter
       
-    public var key: SupportedModules = .some
     public var router: Router?
     
     public var supportedModules: [any Module] = []
