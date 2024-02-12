@@ -203,38 +203,39 @@ ModuleHolder
 The introduction of the ModuleHolder is what I think makes this architecture unique. The ModuleHolder is a class that is a Module itself but also can contain other Modules. This allows for a module and router tree to be created allowing for any module or router to call any other module or router up the tree without having it injected as a dependency. This maintains the testability of the modules and routers. Just specify the class of module you want from the tree and it will search through the branches and find the closest one. If there are more than one of that type it will take the one closest to the caller in the tree.
 
 ```
-  public struct SomeModuleHolderContext: ModuleHolderContext {
-    public var parent: ModuleHolderContext? = nil
+open class ModuleHolder: ModuleHolding {
+  public var holder: ModuleHolding? = nil
+  public var supportedModules: [any Module] = []
+  
+  public init(holder: ModuleHolding? = nil) {
+    self.holder = holder
   }
 
-  @dynamicMemberLookup
-  public class SomeModuleHolder: RootModule, Module, ModuleHolder {
-    
-    public let holder: ModuleHolder? = nil
-    public typealias Context = SomeModuleHolderContext
-    public typealias Router = SomeRouter
-      
-    public var router: Router?
-    
-    public var supportedModules: [any Module] = []
-    
-    private let component: SomeComponent
-    
-    public required init(holder: ModuleHolder? = nil, context: RootModuleHolderContext, component: RootComponent) {
-      self.component = component
-      supportedModules = [
-        // Some modules here
-        // SomeModuleBuilder().build(parentComponent: component, holder: self, context: context)
-      ]
-      
-      router = SomeBuilder().buildRouter(component: SomeViewComponentImpl(moduleHolder: self,
-                                                                          depA: component.depA))
-    }
-    
-    public func routeToRootView() -> any View {
-      router?.rootView() ?? ErrorView()
-    }
+  public func module<M>() -> M? {
+    let t: M? = self.getModule()
+    return t
   }
+  
+  public func router<R, M>(for type: M.Type) -> R? {
+    let t: M? = self.getModule()
+    let r = t as? (any Module)
+    return r?.router as? R
+  }
+  
+  private func getModule<M>() -> M? {
+    var holder: ModuleHolding? = self
+    while holder != nil {
+      
+      if let m: M = holder?.supportedModules.first(where: { $0 is M }) as? M {
+        return m
+      }
+      
+      holder = self.holder
+    }
+    
+    return nil
+  }
+}
 ```
       
       

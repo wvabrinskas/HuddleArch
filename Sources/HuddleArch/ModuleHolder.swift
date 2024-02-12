@@ -10,9 +10,8 @@ import Foundation
 public protocol ModuleHolding: AnyObject {
   var holder: ModuleHolding? { get }
   var supportedModules: [any Module] { get set }
-  subscript<M: Module>(dynamicMember member: M.Type) -> M? { get }
-  func module<M: Module>(for id: M.Type) -> M?
-  func router<M: Module>(for id: M.Type) -> M.Router?
+  func module<M>() -> M?
+  func router<R, M>(for type: M.Type) -> R?
 }
 
 public protocol ModuleHoldingContext {
@@ -49,12 +48,23 @@ open class ModuleHolder: ModuleHolding {
   public init(holder: ModuleHolding? = nil) {
     self.holder = holder
   }
+
+  public func module<M>() -> M? {
+    let t: M? = self.getModule()
+    return t
+  }
   
-  public subscript<T, M: Module>(dynamicMember member: M.Type) -> T? where T : Module {
+  public func router<R, M>(for type: M.Type) -> R? {
+    let t: M? = self.getModule()
+    let r = t as? (any Module)
+    return r?.router as? R
+  }
+  
+  private func getModule<M>() -> M? {
     var holder: ModuleHolding? = self
     while holder != nil {
       
-      if let m: T = holder?.supportedModules.first(where: { $0 is M }) as? T {
+      if let m: M = holder?.supportedModules.first(where: { $0 is M }) as? M {
         return m
       }
       
@@ -62,15 +72,5 @@ open class ModuleHolder: ModuleHolding {
     }
     
     return nil
-  }
-
-  public func module<M: Module>(for id: M.Type) -> M? {
-    let t: M? = self[dynamicMember: id]
-    return t
-  }
-  
-  public func router<M: Module>(for id: M.Type) -> M.Router? {
-    let t: M? = self[dynamicMember: id]
-    return t?.router
   }
 }

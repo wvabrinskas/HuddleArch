@@ -13,7 +13,7 @@ public protocol ComponentProviding: AnyObject, ModuleComponent {
 }
 
 @dynamicMemberLookup
-public class Component: ComponentProviding {
+open class Component: ComponentProviding {
   public let parent: Component?
 
   private var sharedDependencies: [String: Any] = [:]

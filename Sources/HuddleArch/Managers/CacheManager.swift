@@ -12,7 +12,7 @@ enum CacheAction {
 }
 
 @MainActor
-protocol CacheMainActor: AnyObject {
+public protocol CacheMainActor: AnyObject {
   associatedtype CacheObject: AnyObject
   associatedtype CacheKey: AnyObject
   
@@ -23,8 +23,8 @@ protocol CacheMainActor: AnyObject {
   func deleteFromCache(key: CacheKey)
 }
 
-extension CacheMainActor {
-  public func getFromCache<T>(key: CacheKey) -> T? {
+public extension CacheMainActor {
+  func getFromCache<T>(key: CacheKey) -> T? {
     if let objectFromCache = self.cache.object(forKey: key) as? T {
       return objectFromCache
     }
@@ -32,7 +32,7 @@ extension CacheMainActor {
     return nil
   }
   
-  public func addToCache(key: CacheKey, object: CacheObject?) {
+  func addToCache(key: CacheKey, object: CacheObject?) {
     
     guard getFromCache(key: key) == nil else {
       return
@@ -50,7 +50,7 @@ extension CacheMainActor {
 }
 
 
-protocol CacheActor: Actor {
+public protocol CacheActor: Actor {
   associatedtype CacheObject: AnyObject
   associatedtype CacheKey: AnyObject
   
@@ -61,8 +61,8 @@ protocol CacheActor: Actor {
   func deleteFromCache(key: CacheKey)
 }
 
-extension CacheActor {
-  public func getFromCache<T>(key: CacheKey) -> T? {
+public extension CacheActor {
+  func getFromCache<T>(key: CacheKey) -> T? {
     if let objectFromCache = cache.object(forKey: key) as? T {
       return objectFromCache
     }
@@ -70,7 +70,7 @@ extension CacheActor {
     return nil
   }
   
-  public func addToCache(key: CacheKey, object: CacheObject?) {
+  func addToCache(key: CacheKey, object: CacheObject?) {
     
     guard getFromCache(key: key) == nil else {
       return
@@ -88,7 +88,7 @@ extension CacheActor {
 }
 
 
-protocol CacheManager: AnyObject {
+public protocol CacheManager: AnyObject {
   associatedtype CacheObject: AnyObject
   associatedtype CacheKey: AnyObject
   
@@ -99,8 +99,8 @@ protocol CacheManager: AnyObject {
   func deleteFromCache(key: CacheKey)
 }
 
-extension CacheManager {
-  public func getFromCache<T>(key: CacheKey) -> T? {
+public extension CacheManager {
+  func getFromCache<T>(key: CacheKey) -> T? {
     if let objectFromCache = self.cache.object(forKey: key) as? T {
       return objectFromCache
     }
@@ -108,7 +108,7 @@ extension CacheManager {
     return nil
   }
   
-  public func addToCache(key: CacheKey, object: CacheObject?) {
+  func addToCache(key: CacheKey, object: CacheObject?) {
     
     guard getFromCache(key: key) == nil else {
       return
@@ -125,7 +125,7 @@ extension CacheManager {
   }
 }
 
-extension String {
+public extension String {
   var ns: NSString {
     NSString(string: self)
   }

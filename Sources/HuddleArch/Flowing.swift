@@ -18,7 +18,7 @@ public protocol Flowing: AnyObject {
   func onNext()
 }
 
-public class Flow<FlowContext>: Flowing {
+open class Flow<FlowContext>: Flowing {
   public weak var flowModule: FlowModule<FlowContext>?
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
@@ -28,13 +28,13 @@ public class Flow<FlowContext>: Flowing {
     self.context = context
   }
   
-  public func isApplicable(context: FlowContext) -> Bool {
+  open func isApplicable(context: FlowContext) -> Bool {
     true
   }
   
-  public func run() {}
+  open func run() {}
   
-  public func onNext() {
+  open func onNext() {
     flowModule?.onNext()
     
     cancellables.forEach { $0.cancel() }

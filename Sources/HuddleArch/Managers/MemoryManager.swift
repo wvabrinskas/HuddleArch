@@ -33,7 +33,7 @@ public final class MemoryManager {
 }
 
 
-public class MemoryManagedClass<T: MemoryManagerKeys> {
+open class MemoryManagedClass<T: MemoryManagerKeys> {
   private let manager: MemoryManager = .shared
   private let memoryKey: T
   

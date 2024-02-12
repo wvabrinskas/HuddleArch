@@ -15,7 +15,7 @@ fileprivate protocol FlowModuleSupporting {
   func run()
 }
 
-public class FlowModule<FC>: FlowModuleSupporting {
+open class FlowModule<FC>: FlowModuleSupporting {
   public typealias FlowType = Flow<FC>
   public var steps: [FlowType] = []
   public var onComplete: (() -> ())? = nil
@@ -27,7 +27,7 @@ public class FlowModule<FC>: FlowModuleSupporting {
     self.context = context
   }
   
-  public func run() {
+  open func run() {
     guard stepIndex < steps.count else {
       onComplete?()
       return
@@ -39,7 +39,7 @@ public class FlowModule<FC>: FlowModuleSupporting {
     }
   }
   
-  public func onNext() {
+  open func onNext() {
     stepIndex += 1
     run()
   }

@@ -13,8 +13,10 @@ public protocol Routing: AnyObject {
 }
 
 open class Router: Routing {
+  
+  public init() {}
   // Override to provide root view
-  public func rootView() -> any View {
+  open func rootView() -> any View {
     EmptyView()
   }
 }
