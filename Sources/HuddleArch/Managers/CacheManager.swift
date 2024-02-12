@@ -8,7 +8,7 @@
 import Foundation
 
 enum CacheAction {
-  case delete, add, update(huddle: Huddle)
+  case delete, add
 }
 
 @MainActor

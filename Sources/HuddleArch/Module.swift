@@ -71,7 +71,7 @@ public protocol Module {
   associatedtype Component
   associatedtype Router: Routing
   
-  var key: SupportedModules { get }
+  var key: String { get }
   var holder: ModuleHolding? { get }
   var router: Router? { get }
   
@@ -79,7 +79,7 @@ public protocol Module {
 }
 
 open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routing>: NSObject, Module {
-  open var key: SupportedModules { .none }
+  open var key: String { "" }
   
   open weak var holder: ModuleHolding?
   

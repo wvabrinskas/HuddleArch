@@ -11,8 +11,8 @@ public protocol ModuleHolding: AnyObject {
   var holder: ModuleHolding? { get }
   var supportedModules: [any Module] { get set }
   subscript<T>(dynamicMember member: String) -> T? where T : Module { get }
-  func module<T>(for id: SupportedModules) -> T?
-  func router<T, M>(for id: SupportedModules, moduleType: M.Type) -> T?
+  func module<T, R: RawRepresentable<String>>(for id: R) -> T?
+  func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T?
 }
 
 public protocol ModuleHoldingContext {
@@ -54,8 +54,7 @@ open class ModuleHolder: ModuleHolding {
     var holder: ModuleHolding? = self
     while holder != nil {
       
-      if let moduleKey = SupportedModules(rawValue: member),
-         let m: T = holder?.supportedModules.first(where: { $0.key == moduleKey }) as? T {
+      if let m: T = holder?.supportedModules.first(where: { $0.key == member }) as? T {
         return m
       }
       
@@ -65,12 +64,12 @@ open class ModuleHolder: ModuleHolding {
     return nil
   }
 
-  public func module<T>(for id: SupportedModules) -> T? {
+  public func module<T, R: RawRepresentable<String>>(for id: R) -> T? {
     let t: T? = self[dynamicMember: id.rawValue]
     return t
   }
   
-  public func router<T, M>(for id: SupportedModules, moduleType: M.Type) -> T? {
+  public func router<T, M, R: RawRepresentable<String>>(for id: R, moduleType: M.Type) -> T? {
     let t: M? = self[dynamicMember: id.rawValue]
     let r = t as? (any Module)
     return r?.router as? T
