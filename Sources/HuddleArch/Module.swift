@@ -28,7 +28,7 @@ open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routin
     self.holder = holder
   }
   
-  public func onActive() {
+  open func onActive() {
     // no op. Override to perform action when Holder is ready
   }
 }
