@@ -16,6 +16,7 @@ public protocol Module {
   var router: Router? { get }
   
   init(holder: ModuleHolding?, context: Context, component: Component)
+  func onActive()
 }
 
 open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routing>: NSObject, Module {
@@ -25,5 +26,9 @@ open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routin
   
   public required init(holder: ModuleHolding?, context: Context, component: Component) {
     self.holder = holder
+  }
+  
+  public func onActive() {
+    // no op. Override to perform action when Holder is ready
   }
 }

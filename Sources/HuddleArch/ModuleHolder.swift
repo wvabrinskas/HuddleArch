@@ -43,7 +43,13 @@ open class ModuleHolderContext: ModuleHoldingContext {
 
 open class ModuleHolder: ModuleHolding {
   public var holder: ModuleHolding? = nil
-  public var supportedModules: [any Module] = []
+  public var supportedModules: [any Module] = [] {
+    didSet {
+      if supportedModules.isEmpty == false {
+        supportedModules.forEach { $0.onActive() }
+      }
+    }
+  }
   
   public init(holder: ModuleHolding? = nil) {
     self.holder = holder

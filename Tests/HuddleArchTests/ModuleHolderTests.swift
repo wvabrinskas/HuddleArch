@@ -37,6 +37,10 @@ class TestRootModuleHolder: ModuleHolder, Module {
                                              context: TestSecondRootContext(parent: context),
                                              component: TestSecondRootComponent(parent: component))]
   }
+  
+  func onActive() {
+    // no op
+  }
 }
 
 protocol TestRouting: Routing {}
@@ -82,6 +86,10 @@ class TestSecondRootModule: ModuleHolder, Module {
                                          context: context,
                                          component: TestSecondComponent(parent: component))]
   }
+  
+  func onActive() {
+    //
+  }
 }
 
 
@@ -115,11 +123,11 @@ public class ModuleHolderTests: XCTestCase {
                                     context: TestRootContext(),
                                     component: TestRootComponent(parent: nil))
     
-    let secondLevelRoot = root.module(for: TestSecondRootModule.self)
+    let secondLevelRoot: TestSecondRootModule? = root.module()
     
     XCTAssertNotNil(secondLevelRoot)
     
-    let feedFromFirst = secondLevelRoot?.module(for: TestModule.self)
+    let feedFromFirst: TestModule? = secondLevelRoot?.module()
     
     XCTAssertNotNil(feedFromFirst)
   }
