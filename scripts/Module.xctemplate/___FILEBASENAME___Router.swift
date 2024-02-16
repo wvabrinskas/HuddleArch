@@ -32,6 +32,6 @@ public class ___VARIABLE_moduleName:identifier___Router: ___VARIABLE_moduleName:
   }
   
   public func rootView() -> any View {
-    ___VARIABLE_moduleName:identifier___View(router: self, module: component.module, moduleHolder: component.moduleHolder)
+    ___VARIABLE_moduleName:identifier___View(router: self, module: component.module, moduleHolder: component.moduleHolder, viewModel: component.module.viewModel)
   }
 }

@@ -13,13 +13,12 @@ public struct ___VARIABLE_moduleName:identifier___View: View {
   var module: any ___VARIABLE_moduleName: identifier___Supporting
   var moduleHolder: ModuleHolding?
 
+  @State var viewModel: ___VARIABLE_moduleName:identifier___ViewModel
+
   public var body: some View {
     VStack {
       Text("Some Text")
     }
-    .fullscreen()
-    .applyThemeBackground()
-    .logImpression(name: "___VARIABLE_moduleName:identifier___View")
   }
 }
 
