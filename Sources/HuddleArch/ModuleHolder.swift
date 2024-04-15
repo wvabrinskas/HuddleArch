@@ -74,7 +74,7 @@ open class ModuleHolder: ModuleHolding {
         return m
       }
       
-      holder = self.holder
+      holder = holder?.holder
     }
     
     return nil
