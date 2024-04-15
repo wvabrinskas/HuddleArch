@@ -7,12 +7,22 @@
 		<key>HuddleArch-Package.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 		<key>HuddleArch.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
+		</dict>
+		<key>HuddleMacros.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>HuddleMacrosClient.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -23,6 +33,21 @@
 			<true/>
 		</dict>
 		<key>HuddleArchTests</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>HuddleMacros</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>HuddleMacrosClient</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>HuddleMacrosTests</key>
 		<dict>
 			<key>primary</key>
 			<true/>
