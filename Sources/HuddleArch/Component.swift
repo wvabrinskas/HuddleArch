@@ -7,19 +7,28 @@
 
 import Foundation
 
-public protocol ComponentProviding: AnyObject, ModuleComponent {
-  var parent: Component? { get }
+
+public protocol ComponentProviding: AnyObject {
+  var parent: ComponentProviding { get }
   subscript<T>(dynamicMember member: String) -> T { get }
+}
+
+public final class EmptyComponent: ComponentProviding {
+  public var parent: ComponentProviding
+  
+  public subscript<T>(dynamicMember member: String) -> T {
+    <#code#>
+  }
 }
 
 @dynamicMemberLookup
 open class Component: ComponentProviding {
-  public let parent: Component?
+  public let parent: ComponentProviding
 
   private var sharedDependencies: [String: Any] = [:]
   private var cachedProperties: [String: Any] = [:]
   
-  public init(parent: Component?) {
+  public init(parent: ComponentProviding) {
     self.parent = parent
   }
 
@@ -28,7 +37,7 @@ open class Component: ComponentProviding {
       return val
     }
     
-    var component: Component? = self
+    var component: ComponentProviding = self
     
     var tree: String = ""
     

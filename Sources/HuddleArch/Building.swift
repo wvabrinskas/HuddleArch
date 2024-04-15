@@ -7,10 +7,6 @@
 
 import Foundation
 
-public protocol ModuleComponent: Component {
-  var parent: Component? { get }
-}
-
 public protocol ViewComponent {
   var moduleHolder: ModuleHolding? { get }
 }
