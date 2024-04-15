@@ -41,6 +41,10 @@ public class Component: ComponentProviding {
   private var sharedDependencies: [String: Any] = [:]
   private var cachedProperties: [String: Any] = [:]
   
+  public init(parent: Component) {
+    self.parent = parent
+  }
+
   public init(parent: Component?) {
     self.parent = parent
   }
@@ -104,8 +108,7 @@ public struct SomeModuleBuilder: SomeModuleBuilding {
                       holder: SomeModuleHolder?,                       
                       context: SomeModuleHolderContext) -> SomeModule { 
 
-        let component = SomeModuleComponentImpl(parent: parentComponent,                                               
-                                                depA: parentComponent.depA)        
+        let component = SomeModuleComponentImpl(parent: parentComponent)        
         let module = SomeModule(holder: holder, context: context, component: component)    
         let viewComponent = SomeViewComponentImpl(module: module, moduleHolder: holder)         
         module.router = buildRouter(component: viewComponent)             
@@ -114,10 +117,53 @@ public struct SomeModuleBuilder: SomeModuleBuilding {
     }  
 }
 ```
-      
+
+Creating a `Component` here should take in the `parent` that has the dependencies in the graph. 
+
+Example:
+
+```
+public final class LoginMaintenanceStepComponentImpl: Component, LoginMaintenanceStepComponent {
+  public let databaseProvider: MutableDatabaseProviding
+  public let userStorageProvider: UserStorageProviding
+  public let mutableUserStream: MutableUserStreaming
+  public let userFetchProvider: UserFetchProviding
+  public let keychainProvider: KeychainProviding
+  
+  public override init(parent: Component) {
+    self.databaseProvider = parent.databaseProvider
+    self.userStorageProvider = parent.userStorageProvider
+    self.mutableUserStream = parent.mutableUserStream
+    self.userFetchProvider = parent.userFetchProvider
+    self.keychainProvider = parent.keychainProvider
+    
+    super.init(parent: parent)
+  }
+}
+```
+
+Here we are overriding the `required parent` initializer and setting our dependencies within the component itself. There is an `optional parent` initializer as well. This should be reserved for creating `root` level components that don't have any parent dependencies. 
 
 Module
 ======
+
+Module base class that should be overriden: 
+
+```
+open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routing>: NSObject, Module {
+  open weak var holder: ModuleHolding?
+  
+  open var router: Router?
+  
+  public required init(holder: ModuleHolding?, context: Context, component: Component) {
+    self.holder = holder
+  }
+  
+  open func onActive() {
+    // no op. Override to perform action when Holder is ready
+  }
+}
+```
 
 Modules contain code specific to their feature use case. This makes them highly testable since you only need to inject the required dependencies to build them as they are standalone. The only visible functions when this module is referenced are the ones in defined in its supporting protocol.
 
@@ -128,9 +174,8 @@ public protocol SomeModuleComponent: Component {
 
 public class SomeModuleComponentImpl: Component, SomeModuleComponent {
     public var depA: DepA          
-    public init(parent: Component?,                 
-                depA: DepA) {       
-        self.depA = depA       
+    public override init(parent: Component?) {       
+        self.depA = parent.depA       
         super.init(parent: parent)     
     }   
 }    
@@ -139,7 +184,8 @@ public protocol SomeModuleSupporting {
     // public facing functions for the module   
 }   
 
-public final class SomeModule: ModuleObject<ParentModuleContext, SomeModuleComponentImpl, Router: SomeRouter>,SomeModuleSupporting {   
+
+public final class SomeModule: ModuleObject<ParentModuleContext, SomeModuleComponentImpl, SomeRouter>, SomeModuleSupporting {   
     public weak var holder: ModuleHolder?    
     public var router: SomeRouter?    
     private let depA: DepA    
@@ -152,8 +198,6 @@ public final class SomeModule: ModuleObject<ParentModuleContext, SomeModuleCompo
     // public facing functions for the module  
 }
 ```
-
-        
 
 Router
 ======
@@ -193,9 +237,7 @@ public class SomeMOduleRouter: SomeModuleRouting, Logger {
     SomeRootView()
   }
 }
-```
-        
-        
+```  
 
 ModuleHolder
 ============
@@ -277,6 +319,109 @@ open class ModuleHolder: ModuleHolding {
 }
 
 ```
+
+Flow Module
+==========
+
+Flow modules are not necessarily `Modules` themselves but they can be. They provide a way to perfrom tasks in series. For example, if you needed a `login step` -> `clean up step` -> `backup step` where each step needs to be performed in series. 
+
+```
+public class SomeFlowModuleComponentImpl: Component, SomeFlowModuleComponent {
+  // implement dependencies here
+  public let depA: DepA
+  public let depB: DepB
+  public let depC: DepC
+  
+  public var firstStepComponent: FirstStepComponent {
+    FirstStepComponentImpl(parent: self)
+  }
+
+  public var secondStepComponent: SecondStepComponent {
+    SecondStepComponentImpl(parent: self)
+  }
+  
+  public var ThirdStepComponent: ThirdStepComponent {
+    ThirdStepComponent(parent: self)
+  }
+  
+  public override init(parent: Component) {
+    self.depA = parent.depA
+    self.depB = parent.depB
+    self.depC = parent.depC
+
+    super.init(parent: parent)
+  }
+}
+
+public protocol SomeFlowModuleSupporting {
+  func run()
+}
+
+public struct SomeFlowContext {}
+
+public final class SomeFlowModule: FlowModule<SomeFlowContext>,
+                                      SomeFlowModuleSupporting,
+                                      Module {
+  
+  public weak var holder: ModuleHolding?
+  public weak var router: SomeFlowRouter?
+    
+  deinit {
+    // remove steps as this can cause a memory leak
+    steps = []
+  }
+  
+  public func onActive() {
+    // no op
+  }
+  
+  public func onAppear() {
+    // no op
+  }
+  
+  public init(holder: ModuleHolding?, context: SomeRootModuleHolderContext, component: SomeFlowModuleComponent) {
+    self.holder = holder
+    
+    let context = SomeFlowContext()
+    
+    super.init(context: context)
+    
+    self.steps = [
+      FirstStep(flowModule: self, context: context, component: component.firstStepComponent),
+      SecondStep(flowModule: self, context: context, component: component.secondStepComponent),
+      ThirdStep(flowModule: self, context: context, component: component.thirdStepComponent)
+    ]
+  }
+}
+```
+
+Here we create some `FlowModule` with some `steps` that has one function `run()`. When calling `run()` it will call the parent `FlowModule` run function. This will run through the `Flows` automatically. **It is required that your step calls `onNext` when it is completed.**
+
+```
+public final class FirstStep: Flow<SomeFlowContext> {
+  private let depA: 
+  
+  public init(flowModule: FlowModule<SomeFlowContext>,
+              context: SomeFlowContext,
+              component: FirstStepComponent) {
+    self.depA = component.depA
+    
+    super.init(flowModule: flowModule, context: context, component: component)
+  }
+  
+  public override func isApplicable(context: SomeFlowContext) -> Bool {
+    true
+  }
+  
+  public override func run() {
+    // do some logic
+    onNext()
+  }
+```
+
+This is an example `Flow` step. It takes in the context and the component specific to this step. The `SomeFlowContext` is some non-dependency graph object. Could be used to pass one-off state. 
+
+In the `run` function we perform some action and then call `onNext`. This will tell the `flowModule` that this step is completed and to move on. Before a step is run it checks `isApplicable` with the context. Here you can optionally skip a step based on some state if needed.
     
     
 
