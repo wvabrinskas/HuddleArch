@@ -44,7 +44,7 @@ public extension CacheMainActor {
     
   }
   
-  public func deleteFromCache(key: CacheKey) {
+  func deleteFromCache(key: CacheKey) {
     self.cache.removeObject(forKey: key)
   }
 }
@@ -82,7 +82,7 @@ public extension CacheActor {
     
   }
   
-  public func deleteFromCache(key: CacheKey) {
+  func deleteFromCache(key: CacheKey) {
     cache.removeObject(forKey: key)
   }
 }
@@ -120,7 +120,7 @@ public extension CacheManager {
     
   }
   
-  public func deleteFromCache(key: CacheKey) {
+  func deleteFromCache(key: CacheKey) {
     self.cache.removeObject(forKey: key)
   }
 }

@@ -13,6 +13,7 @@ public protocol Flowing: AnyObject {
   var flowModule: FlowModule<FlowContext>? { get }
   var context: FlowContext { get }
   var cancellables: Set<AnyCancellable> { get set }
+  
   func isApplicable(context: FlowContext) -> Bool
   func run()
   func onNext()
@@ -23,7 +24,7 @@ open class Flow<FlowContext>: Flowing {
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init(flowModule: FlowModule<FlowContext>, context: FlowContext) {
+  public init<FComponent: FlowComponent>(flowModule: FlowModule<FlowContext>, context: FlowContext, component: FComponent) {
     self.flowModule = flowModule
     self.context = context
   }
