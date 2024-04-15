@@ -24,7 +24,7 @@ open class Flow<FlowContext>: Flowing {
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init<FComponent: FlowComponent>(flowModule: FlowModule<FlowContext>, context: FlowContext, component: FComponent) {
+  public init<FComponent: Component>(flowModule: FlowModule<FlowContext>, context: FlowContext, component: FComponent) {
     self.flowModule = flowModule
     self.context = context
   }
