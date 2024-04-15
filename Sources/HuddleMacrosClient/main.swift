@@ -26,6 +26,10 @@ final class RootComponentImpl: Component, RootComponent {
   var objectA: ObjectA
   var objectB: ObjectB
   var objectC: ObjectC
+  
+//  var objectCD: ObjectC {
+//    ObjectC()
+//  }
 }
 
 protocol FirstSubComponent: Component {

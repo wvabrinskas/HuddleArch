@@ -3,16 +3,6 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct ComponentImplFreeMacro: DeclarationMacro {
-  public static func expansion(of node: some FreestandingMacroExpansionSyntax, 
-                               in context: some MacroExpansionContext) throws -> [DeclSyntax] {
-    
-    print(node)
-    
-    return []
-  }
-}
-
 public struct ComponentImplMacro: MemberMacro {
   public static func expansion(of node: AttributeSyntax, 
                                providingMembersOf declaration: some DeclGroupSyntax,
@@ -36,7 +26,9 @@ public struct ComponentImplMacro: MemberMacro {
     
     members.forEach { m in
       if let variable = m.decl.as(VariableDeclSyntax.self),
-         let variableDec = variable.bindings.first {
+         let variableDec = variable.bindings.first,
+         variableDec.accessorBlock == nil,
+         variableDec.initializer == nil { // dont add for pre defined variables already
         
         // create init function
         let selfExpression = DeclReferenceExprSyntax(baseName: .keyword(.`self`))

@@ -9,8 +9,7 @@ import XCTest
 import HuddleMacrosMacros
 
 let testMacros: [String: Macro.Type] = [
-    "ComponentImpl": ComponentImplMacro.self,
-    "ComponentImplFree": ComponentImplFreeMacro.self
+    "ComponentImpl": ComponentImplMacro.self
 ]
 #endif
 
@@ -57,4 +56,103 @@ final class HuddleMacrosTests: XCTestCase {
         throw XCTSkip("macros are only supported when running tests for the host platform")
         #endif
     }
+  
+  
+  func testMacro_predefined_set_variables() throws {
+#if canImport(HuddleMacrosMacros)
+    assertMacroExpansion(
+    """
+    protocol RootComponent: Component {
+      var objectA: ObjectA { get }
+      var objectB: ObjectB { get }
+      var objectC: ObjectC { get }
+    }
+    
+    @ComponentImpl
+    public final class RootComponentImpl: Component, RootComponent {
+      public let objectA: ObjectA
+      public let objectB: ObjectB
+      public let objectC: ObjectC
+    
+      var objectCD: ObjectC = ObjectC()
+    }
+    """,
+    expandedSource: """
+    protocol RootComponent: Component {
+      var objectA: ObjectA { get }
+      var objectB: ObjectB { get }
+      var objectC: ObjectC { get }
+    }
+    public final class RootComponentImpl: Component, RootComponent {
+      public let objectA: ObjectA
+      public let objectB: ObjectB
+      public let objectC: ObjectC
+    
+      var objectCD: ObjectC = ObjectC()
+    
+        public override init(parent: Component) {
+            self.objectA = parent.objectA
+            self.objectB = parent.objectB
+            self.objectC = parent.objectC
+            super.init(parent: parent)
+        }
+    }
+    """,
+    macros: testMacros
+    )
+#else
+    throw XCTSkip("macros are only supported when running tests for the host platform")
+#endif
+  }
+  
+  func testMacro_predefined_block_Variables() throws {
+      #if canImport(HuddleMacrosMacros)
+      assertMacroExpansion(
+          """
+          protocol RootComponent: Component {
+            var objectA: ObjectA { get }
+            var objectB: ObjectB { get }
+            var objectC: ObjectC { get }
+          }
+          
+          @ComponentImpl
+          public final class RootComponentImpl: Component, RootComponent {
+            public let objectA: ObjectA
+            public let objectB: ObjectB
+            public let objectC: ObjectC
+          
+            var objectCD: ObjectC {
+              ObjectC()
+            }
+          }
+          """,
+          expandedSource: """
+          protocol RootComponent: Component {
+            var objectA: ObjectA { get }
+            var objectB: ObjectB { get }
+            var objectC: ObjectC { get }
+          }
+          public final class RootComponentImpl: Component, RootComponent {
+            public let objectA: ObjectA
+            public let objectB: ObjectB
+            public let objectC: ObjectC
+
+            var objectCD: ObjectC {
+              ObjectC()
+            }
+
+              public override init(parent: Component) {
+                  self.objectA = parent.objectA
+                  self.objectB = parent.objectB
+                  self.objectC = parent.objectC
+                  super.init(parent: parent)
+              }
+          }
+          """,
+          macros: testMacros
+      )
+      #else
+      throw XCTSkip("macros are only supported when running tests for the host platform")
+      #endif
+  }
 }
