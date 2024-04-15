@@ -12,7 +12,7 @@ public protocol ___VARIABLE_moduleName:identifier___ModuleComponent: Component {
 public class ___VARIABLE_moduleName:identifier___ModuleComponentImpl: Component, ___VARIABLE_moduleName:identifier___ModuleComponent {
   // implement dependencies here
 
-  public override init(parent: Component?) {
+  public override init(parent: Component) {
     super.init(parent: parent)
   }
 }
