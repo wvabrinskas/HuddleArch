@@ -74,21 +74,18 @@ class TestSecondRootRouter: TestSecondRootRouting {
 class TestSecondRootComponent: Component {}
 class TestSecondRootContext: ModuleHolderContext {}
 
-class TestSecondRootModule: ModuleHolder, Module {
-  var router: TestSecondRootRouter? = TestSecondRootRouter()
+class TestSecondRootModule: ModuleHolderModule<TestSecondRootContext, TestSecondRootComponent, TestSecondRootRouter> {
   
   public required init(holder: ModuleHolding?,
                        context: TestSecondRootContext,
                        component: TestSecondRootComponent) {
-    super.init(holder: holder)
+    super.init(holder: holder, context: context, component: component)
         
+    self.router = TestSecondRootRouter()
+
     supportedModules = [TestSecondModule(holder: holder,
                                          context: context,
                                          component: TestSecondComponent(parent: component))]
-  }
-  
-  func onActive() {
-    //
   }
 }
 

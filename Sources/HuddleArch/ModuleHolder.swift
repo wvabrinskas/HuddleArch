@@ -41,6 +41,24 @@ open class ModuleHolderContext: ModuleHoldingContext {
   }
 }
 
+open class ModuleHolderModule<Context: ModuleHoldingContext, C: Component, Router: Routing>: ModuleHolder, Module {
+  public typealias Context = Context
+  
+  public typealias Component = C
+  
+  public typealias Router = Router
+  
+  public var router: Router?
+  
+  public required init(holder: (any ModuleHolding)?, context: Context, component: C) {
+    super.init(holder: holder)
+  }
+  
+  open func onActive() {
+    // no op
+  }
+}
+
 open class ModuleHolder: ModuleHolding {
   public var holder: ModuleHolding? = nil
   public var supportedModules: [any Module] = [] {
