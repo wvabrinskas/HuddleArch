@@ -12,10 +12,11 @@ public protocol ViewComponent {
 }
 
 public protocol ViewBuilding {
-  func buildRouter<C: ViewComponent, R: Routing>(component: C) -> R?
+  @MainActor static func buildRouter<C: ViewComponent, R: Routing>(component: C) -> R?
 }
 
 public protocol ModuleBuilder {
   associatedtype M: Module
-  func build(parentComponent: Component, holder: ModuleHolding?, context: M.Context) -> M
+  @MainActor
+  static func build(parentComponent: Component, holder: ModuleHolding?, context: M.Context) -> M
 }

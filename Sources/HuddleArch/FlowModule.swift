@@ -11,8 +11,7 @@ fileprivate protocol FlowModuleSupporting {
   associatedtype FlowType: Flowing
   var steps: [FlowType] { get }
   var onComplete: (() -> ())? { get set }
-  func onNext()
-  func run()
+  func run() async
 }
 
 open class FlowModule<FC>: FlowModuleSupporting {
@@ -27,20 +26,12 @@ open class FlowModule<FC>: FlowModuleSupporting {
     self.context = context
   }
   
-  open func run() {
-    guard stepIndex < steps.count else {
-      onComplete?()
-      return
-    }
-    if steps[stepIndex].isApplicable(context: context) {
-      steps[stepIndex].run()
-    } else {
-      onNext()
+  open func run() async {
+    for step in steps {
+      if step.isApplicable(context: context) {
+        await step.run()
+      }
     }
   }
   
-  open func onNext() {
-    stepIndex += 1
-    run()
-  }
 }

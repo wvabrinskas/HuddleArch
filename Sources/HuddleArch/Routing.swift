@@ -8,16 +8,19 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 public protocol Routing: AnyObject {
-  @MainActor
   func rootView() -> any View
 }
 
+@MainActor
 open class Router: Routing {
   
-  public init() {}
+  public nonisolated init() {
+    // no op
+  }
+  
   // Override to provide root view
-  @MainActor
   open func rootView() -> any View {
     EmptyView()
   }
