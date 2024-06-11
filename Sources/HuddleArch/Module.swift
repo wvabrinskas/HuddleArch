@@ -22,7 +22,7 @@ public protocol Module {
 open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routing>: NSObject, Module {
   open weak var holder: ModuleHolding?
   
-  open var router: Router?
+  @MainActor open var router: Router?
   
   public required init(holder: ModuleHolding?, context: Context, component: Component) {
     self.holder = holder
@@ -30,5 +30,10 @@ open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routin
   
   open func onActive() {
     // no op. Override to perform action when Holder is ready
+  }
+  
+  @MainActor
+  public func setRouter(_ router: Router?) {
+    self.router = router
   }
 }

@@ -15,7 +15,7 @@ public protocol Flowing: AnyObject {
   var cancellables: Set<AnyCancellable> { get set }
   
   func isApplicable(context: FlowContext) -> Bool
-  func run()
+  func run() async
   func onNext()
 }
 
@@ -33,11 +33,9 @@ open class Flow<FlowContext>: Flowing {
     true
   }
   
-  open func run() {}
+  open func run() async {}
   
   open func onNext() {
-    flowModule?.onNext()
-    
     cancellables.forEach { $0.cancel() }
     cancellables = []
   }

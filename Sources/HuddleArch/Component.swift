@@ -7,6 +7,12 @@
 
 import Foundation
 
+public final class EmptyComponent: Component {
+  public init() {
+    super.init(parent: nil)
+  }
+}
+
 public protocol ComponentProviding: AnyObject {
   var parent: Component? { get }
   subscript<T>(dynamicMember member: String) -> T { get }
