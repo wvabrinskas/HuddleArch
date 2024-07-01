@@ -9,7 +9,7 @@ import Foundation
 
 public typealias MemoryManagerKeys = RawRepresentable<String>
 
-public final class MemoryManager {
+public actor MemoryManager {
   public static let shared = MemoryManager()
   private var managing: [AnyHashable: Int] = [:]
   
@@ -38,11 +38,15 @@ open class MemoryManagedClass<T: MemoryManagerKeys> {
   private let memoryKey: T
   
   deinit {
-    manager.remove(key: memoryKey)
+    Task {
+      await manager.remove(key: memoryKey)
+    }
   }
   
   public init(memoryKey: T) {
     self.memoryKey = memoryKey
-    manager.add(key: memoryKey)
+    Task {
+      await manager.add(key: memoryKey)
+    }
   }
 }
