@@ -7,6 +7,12 @@
 
 import Foundation
 
+public struct EmptyResult: FlowResult {
+  public func updating(_ with: EmptyResult) -> EmptyResult {
+    .init()
+  }
+}
+
 public protocol FlowResult: Sendable {
   func updating(_ with: Self) -> Self
 }
