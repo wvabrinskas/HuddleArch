@@ -10,21 +10,23 @@ import Combine
 
 public protocol Flowing: AnyObject {
   associatedtype FlowContext
-  var flowModule: FlowModule<FlowContext>? { get }
+  associatedtype FlowResultObject: FlowResult
+  var flowModule: FlowModule<FlowContext, FlowResultObject>? { get }
   var context: FlowContext { get }
   var cancellables: Set<AnyCancellable> { get set }
   
   func isApplicable(context: FlowContext) -> Bool
   func run() async
+  func run(flowResult: FlowResultObject?) async -> FlowResultObject?
   func onNext()
 }
 
-open class Flow<FlowContext>: Flowing {
-  public weak var flowModule: FlowModule<FlowContext>?
+open class Flow<FlowContext, FlowResultObject: FlowResult>: Flowing {
+  public weak var flowModule: FlowModule<FlowContext, FlowResultObject>?
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init<FComponent: Component>(flowModule: FlowModule<FlowContext>, context: FlowContext, component: FComponent) {
+  public init<FComponent: Component>(flowModule: FlowModule<FlowContext, FlowResultObject>, context: FlowContext, component: FComponent) {
     self.flowModule = flowModule
     self.context = context
   }
@@ -34,6 +36,14 @@ open class Flow<FlowContext>: Flowing {
   }
   
   open func run() async {}
+  
+  open func run(flowResult: FlowResultObject? = nil) async -> FlowResultObject? {
+    if let flowResult {
+      return flowModule?.result?.updating(flowResult)
+    }
+    
+    return nil
+  }
   
   open func onNext() {
     cancellables.forEach { $0.cancel() }

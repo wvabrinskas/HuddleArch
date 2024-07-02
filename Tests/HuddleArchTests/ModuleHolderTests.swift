@@ -10,8 +10,10 @@ import XCTest
 import SwiftUI
 @testable import HuddleArch
 
-
+@MainActor
 protocol TestRootRouting: Routing {}
+
+@MainActor
 class TestRootRouter: TestRootRouting {
   func rootView() -> any View {
     Text("")
@@ -23,7 +25,7 @@ class TestRootContext: ModuleHolderContext {
 }
 
 class TestRootModuleHolder: ModuleHolder, Module {
-  var router: TestRootRouter? = TestRootRouter()
+  var router: TestRootRouter?
 
   public required init(holder: ModuleHolding?,
                        context: TestRootContext,
@@ -59,7 +61,6 @@ class TestModule: ModuleObject<TestRootContext, TestComponent, TestRouter> {
       
   public required init(holder: ModuleHolding?, context: TestRootContext, component: TestComponent) {
     super.init(holder: holder, context: context, component: component)
-    self.router = TestRouter()
   }
 }
 
@@ -81,8 +82,6 @@ class TestSecondRootModule: ModuleHolderModule<TestSecondRootContext, TestSecond
                        component: TestSecondRootComponent) {
     super.init(holder: holder, context: context, component: component)
         
-    self.router = TestSecondRootRouter()
-
     supportedModules = [TestSecondModule(holder: holder,
                                          context: context,
                                          component: TestSecondComponent(parent: component))]
@@ -99,7 +98,7 @@ class TestSecondRouter: TestSecondRouting {
 
 class TestSecondComponent: Component {}
 
-class TestSecondModule:  ModuleObject<TestSecondRootContext, TestSecondComponent, TestSecondRouter> {
+class TestSecondModule: ModuleObject<TestSecondRootContext, TestSecondComponent, TestSecondRouter> {
   typealias Context = TestSecondRootContext
   typealias Component = TestSecondComponent
   typealias Router = TestSecondRouter
@@ -108,13 +107,13 @@ class TestSecondModule:  ModuleObject<TestSecondRootContext, TestSecondComponent
                        context: TestSecondRootContext,
                        component: TestSecondComponent) {
     super.init(holder: holder, context: context, component: component)
-    self.router = TestSecondRouter()
   }
 }
 
 
 public class ModuleHolderTests: XCTestCase {
   
+  @MainActor
   func test_getFirstLevelModule_fromSecondLevel() {
     let root = TestRootModuleHolder(holder: nil,
                                     context: TestRootContext(),
