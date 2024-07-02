@@ -70,7 +70,7 @@ public class FlowTests: XCTestCase {
   func test_resultUpdates() async {
     let expected = TestFlowResult(title: "title", name: "name")
     
-    let result: TestFlowResult? = await flow.run()
+    let result: TestFlowResult? = await flow.runResult()
     
     XCTAssertEqual(expected, result)
   }
