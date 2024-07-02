@@ -8,6 +8,8 @@
 import Foundation
 
 public struct EmptyResult: FlowResult {
+  public init() {}
+  
   public func updating(_ with: EmptyResult) -> EmptyResult {
     .init()
   }
