@@ -25,8 +25,10 @@ fileprivate protocol FlowModuleSupporting {
   var result: ResultObject? { get set }
   var steps: [FlowType] { get }
   var onComplete: (() -> ())? { get set }
+  @MainActor func runIsolated() async
   func run() async
   func runResult() async -> ResultObject?
+  @MainActor func runResultIsolated() async -> ResultObject?
 }
 
 open class FlowModule<FC, ResultObject: FlowResult>: FlowModuleSupporting {
@@ -54,6 +56,16 @@ open class FlowModule<FC, ResultObject: FlowResult>: FlowModuleSupporting {
     }
     
     return resultToReturn
+  }
+  
+  @MainActor
+  open func runResultIsolated() async -> ResultObject? {
+    await runResult()
+  }
+  
+  @MainActor
+  open func runIsolated() async {
+    await run()
   }
   
   open func run() async {
