@@ -96,25 +96,24 @@ Builder
 The builder is responsible for creating the Module and Router. It is passed the parent Component, the ModuleHolder, as well as the ModuleHolderContext. It will use those to contruct the module, router, and component dependency graph.
 
 ```
-public protocol SomeModuleBuilding: ViewBuilding, ModuleBuilder {   }    
+public protocol SomeModuleBuilding: ViewBuilding, ModuleBuilder {}
 
-public struct SomeModuleBuilder: SomeModuleBuilding {     
-    public func buildRouter(component: T) -> R? where T : ViewComponent, R : Routing {       
-        guard let c = component as? SomeViewComponentImpl else { return nil }       
-        return SomeModuleRouter(component: c) as? R     
-    }          
+public struct SomeModuleBuilder: SomeModuleBuilding {
+  public static func buildRouter<T, R>(component: T) -> R? where T : ViewComponent, R : Routing {
+    guard let c = component as? SomeViewComponentImpl else { return nil }
+    return SomeModuleRouter(component: c) as? R
+  }
+  
+  public static func build(parentComponent: Component, holder: ModuleHolding?, context: RootModuleHolderContext) -> StoreModule {
+      let component = SomeModuleComponentImpl(parent: parentComponent)
+      let module = SomeModule(holder: holder, context: context, component: component)
 
-    public func build(parentComponent: Component,                       
-                      holder: SomeModuleHolder?,                       
-                      context: SomeModuleHolderContext) -> SomeModule { 
-
-        let component = SomeModuleComponentImpl(parent: parentComponent)        
-        let module = SomeModule(holder: holder, context: context, component: component)    
-        let viewComponent = SomeViewComponentImpl(module: module, moduleHolder: holder)         
-        module.router = buildRouter(component: viewComponent)             
-        return module  
-
-    }  
+      let viewComponent = SomeModuleComponentImpl(module: module, moduleHolder: holder)
+    
+      module.router = buildRouter(component: viewComponent)
+      
+      return module
+  }
 }
 ```
 
@@ -141,8 +140,21 @@ public final class LoginMaintenanceStepComponentImpl: Component, LoginMaintenanc
   }
 }
 ```
-
 Here we are overriding the `required parent` initializer and setting our dependencies within the component itself. There is an `optional parent` initializer as well. This should be reserved for creating `root` level components that don't have any parent dependencies. 
+
+Or you can use the built in macro for building a component
+```
+import HuddleMacros
+
+@ComponentImpl
+public final class LoginMaintenanceStepComponentImpl: Component, LoginMaintenanceStepComponent {
+  public let databaseProvider: MutableDatabaseProviding
+  public let userStorageProvider: UserStorageProviding
+  public let mutableUserStream: MutableUserStreaming
+  public let userFetchProvider: UserFetchProviding
+  public let keychainProvider: KeychainProviding
+}
+```
 
 Module
 ======
@@ -206,6 +218,8 @@ What you'll see as you read this is that the Router example uses SwiftUI. This i
 
 The Router is responsible for providing a UI for the Module. It contains routes for the UI to navigate to if there are actions taken by the user in the UI. A module is not required to have a router if there is no user facing actions required.
 
+Routers need to be marked `@MainActor` and should inherit from the `Router` class.
+
 ```
 public protocol SomeViewComponent: ViewComponent {
   var module: SomeModuleSupporting { get }
@@ -217,23 +231,25 @@ public struct SomeViewComponentImpl: SettingsViewComponent {
   public var moduleHolder: ModuleHolder?
 }
 
-public protocol SomeModuleRouting: Routing {}
+@MainActor
+public protocol SomeModuleRouting: Router {}
 
-public class SomeMOduleRouter: SomeModuleRouting, Logger {
-  
+@MainActor
+public class SomeModuleRouter: Router, SomeModuleRouting, Logger {
   public var logLevel: LogLevel = .high
-  private let moduleHolder: SomeModuleHolder?
-  private let component: SomeViewComponent
+  private let moduleHolder: RootModuleHolder?
+  private let component: StoreViewComponent
   
-  public init(component: SomeViewComponent) {
+  public init(component: StoreViewComponent) {
     self.component = component
     self.moduleHolder = component.moduleHolder as? SomeModuleHolder
+    super.init()
     if moduleHolder == nil {
       log(type: .message, message: "No valid ModuleHolder to be found in \(#file)")
     }
   }
   
-  public func rootView() -> any View {
+  public override func rootView() -> any View {
     SomeRootView()
   }
 }
@@ -326,6 +342,7 @@ Flow Module
 Flow modules are not necessarily `Modules` themselves but they can be. They provide a way to perfrom tasks in series. For example, if you needed a `login step` -> `clean up step` -> `backup step` where each step needs to be performed in series. 
 
 ```
+@ComponentImpl
 public class SomeFlowModuleComponentImpl: Component, SomeFlowModuleComponent {
   // implement dependencies here
   public let depA: DepA
@@ -342,14 +359,6 @@ public class SomeFlowModuleComponentImpl: Component, SomeFlowModuleComponent {
   
   public var ThirdStepComponent: ThirdStepComponent {
     ThirdStepComponent(parent: self)
-  }
-  
-  public override init(parent: Component) {
-    self.depA = parent.depA
-    self.depB = parent.depB
-    self.depC = parent.depC
-
-    super.init(parent: parent)
   }
 }
 
