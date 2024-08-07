@@ -14,7 +14,7 @@ Quick start
 
 Install the xcode templates using `./scripts/onboard.sh`
 
-Then to create a new `Module` by doing `Add new file` -> `Huddle` in Xcode.
+Then create a new `Module` by doing `Add new file` -> `Huddle` in Xcode.
 
 Components
 ==========
