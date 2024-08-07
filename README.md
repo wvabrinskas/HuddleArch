@@ -9,6 +9,13 @@ The architecture relies heavily on protocol definitions and generics. This allow
 
 This will all be open-sourced once I clean up the code a bit more. I will also be creating a sample application.
 
+Quick start
+==========
+
+Install the xcode templates using `./scripts/onboard.sh`
+
+Then to create a new `Module` by doing `Add new file` -> `Huddle` in Xcode.
+
 Components
 ==========
 
