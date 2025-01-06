@@ -12,7 +12,9 @@ public protocol ViewComponent {
 }
 
 public protocol ViewBuilding {
-  @MainActor static func buildRouter<C: ViewComponent, R: Routing>(component: C) -> R?
+  associatedtype BuilderComponent: ViewComponent
+  associatedtype BuilderRouter: Routing
+  @MainActor static func buildRouter(component: BuilderComponent) -> BuilderRouter
 }
 
 public protocol ModuleBuilder {

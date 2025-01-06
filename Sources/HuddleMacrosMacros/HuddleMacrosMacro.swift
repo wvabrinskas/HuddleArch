@@ -3,6 +3,30 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
+public struct BuildingImplMacro: MemberMacro {
+  public static func expansion(of node: AttributeSyntax,
+                               providingMembersOf declaration: some DeclGroupSyntax,
+                               in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+    
+    guard let protocolDecl = declaration.as(StructDeclSyntax.self),
+          let firstAttribute = protocolDecl.attributes.first?.as(AttributeSyntax.self),
+          let router = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(DeclReferenceExprSyntax.self)?.baseName.text,
+          let componentIndex = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?.index(at: 1),
+          let component = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?[componentIndex].expression.as(DeclReferenceExprSyntax.self)?.baseName.text else {
+      return []
+    }
+    
+    let stringLiteral = """
+                         public static func buildRouter(component: \(component)) -> \(router) {
+                           \(router)(component: component)
+                         }           
+                        """
+    
+    let decl = DeclSyntax(stringLiteral: stringLiteral)
+    return [decl]
+  }
+}
+
 public struct ComponentImplMacro: MemberMacro {
   public static func expansion(of node: AttributeSyntax, 
                                providingMembersOf declaration: some DeclGroupSyntax,
@@ -87,5 +111,6 @@ public struct ComponentImplMacro: MemberMacro {
 struct HuddleMacrosPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
       ComponentImplMacro.self,
+      BuildingImplMacro.self
     ]
 }

@@ -4,15 +4,12 @@
 
 import Foundation
 import HuddleArch
+import HuddleMacros
 
 public protocol ___VARIABLE_moduleName:identifier___Building: ViewBuilding, ModuleBuilder {}
 
+@Building(___VARIABLE_moduleName:identifier___Router, ___VARIABLE_moduleName:identifier___ViewComponent)
 public struct ___VARIABLE_moduleName:identifier___Builder: ___VARIABLE_moduleName:identifier___Building {
-  public func buildRouter<T, R>(component: T) -> R? where T : ViewComponent, R : Routing {
-    guard let c = component as? ___VARIABLE_moduleName:identifier___ViewComponent else { return nil }
-    return ___VARIABLE_moduleName:identifier___Router(component: c) as? R
-  }
-  
   public func build(parentComponent: Component, holder: ModuleHolding?, context: ___VARIABLE_parentModuleHolderContextClass:identifier___) -> ___VARIABLE_moduleName:identifier___Module {
       let component = ___VARIABLE_moduleName:identifier___ModuleComponentImpl(parent: parentComponent)
       let module = ___VARIABLE_moduleName:identifier___Module(holder: holder, context: context, component: component)

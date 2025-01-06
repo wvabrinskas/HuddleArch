@@ -9,11 +9,42 @@ import XCTest
 import HuddleMacrosMacros
 
 let testMacros: [String: Macro.Type] = [
-    "ComponentImpl": ComponentImplMacro.self
+    "ComponentImpl": ComponentImplMacro.self,
+    "Building": BuildingImplMacro.self
 ]
 #endif
 
 final class HuddleMacrosTests: XCTestCase {
+  
+  func testBuildingMacro() throws {
+      #if canImport(HuddleMacrosMacros)
+      assertMacroExpansion(
+          """
+          public protocol TestBuilding: ViewBuilding, ModuleBuilder {
+          }
+          
+          @Building(TestRouter, TestViewComponent)
+          public struct TestBuilder: TestBuilding {
+          }
+          
+          """,
+          expandedSource: """
+          public protocol TestBuilding: ViewBuilding, ModuleBuilder {
+          }
+          public struct TestBuilder: TestBuilding {
+
+              public static func buildRouter(component: TestViewComponent) -> TestRouter {
+                 TestRouter(component: component)
+               }
+          }
+          """,
+          macros: testMacros
+      )
+      #else
+      throw XCTSkip("macros are only supported when running tests for the host platform")
+      #endif
+  }
+  
     func testMacro() throws {
         #if canImport(HuddleMacrosMacros)
         assertMacroExpansion(
