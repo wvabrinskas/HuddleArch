@@ -8,7 +8,7 @@ import HuddleMacros
 
 public protocol ___VARIABLE_moduleName:identifier___Building: ViewBuilding, ModuleBuilder {}
 
-@Building(___VARIABLE_moduleName:identifier___Router, ___VARIABLE_moduleName:identifier___ViewComponent)
+@Building(___VARIABLE_moduleName:identifier___Router, ___VARIABLE_moduleName:identifier___ViewComponentImpl)
 public struct ___VARIABLE_moduleName:identifier___Builder: ___VARIABLE_moduleName:identifier___Building {
   public static func build(parentComponent: Component, holder: ModuleHolding?, context: ___VARIABLE_parentModuleHolderContextClass:identifier___) -> ___VARIABLE_moduleName:identifier___Module {
       let component = ___VARIABLE_moduleName:identifier___ModuleComponentImpl(parent: parentComponent)
