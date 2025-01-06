@@ -27,7 +27,7 @@ struct ___VARIABLE_moduleName:identifier___View_Previews: PreviewProvider {
   static let rootComponent =  ___VARIABLE_parentComponentClass:identifier___Impl()
   static let moduleHolder = ___VARIABLE_parentModuleHolderClassName:identifier___(context: context, component: rootComponent)
 
-  static let module = ___VARIABLE_moduleName: identifier___Builder().build(parentComponent: rootComponent, holder: moduleHolder, context: context)
+  static let module = ___VARIABLE_moduleName: identifier___Builder.build(parentComponent: rootComponent, holder: moduleHolder, context: context)
 
   static var previews: some View {
     module.router!.rootView()

@@ -18,7 +18,8 @@ public struct ___VARIABLE_moduleName:identifier___ViewComponentImpl: ___VARIABLE
 
 public protocol ___VARIABLE_moduleName:identifier___Routing: Routing {}
 
-public class ___VARIABLE_moduleName:identifier___Router: ___VARIABLE_moduleName:identifier___Routing, Logger {
+@MainActor
+public class ___VARIABLE_moduleName:identifier___Router: ___VARIABLE_moduleName:identifier___Routing, @preconcurrency Logger {
   public var logLevel: LogLevel = .high
   private let moduleHolder: ___VARIABLE_parentModuleHolderClassName:identifier___?
   private let component: ___VARIABLE_moduleName:identifier___ViewComponent
