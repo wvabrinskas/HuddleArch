@@ -13,6 +13,12 @@ public final class EmptyComponent: Component {
   }
 }
 
+public final class EmptyFlowComponent: Component, FlowStepComponent {
+  public init() {
+    super.init(parent: nil)
+  }
+}
+
 public protocol ComponentProviding: AnyObject {
   var parent: Component? { get }
   subscript<T>(dynamicMember member: String) -> T { get }

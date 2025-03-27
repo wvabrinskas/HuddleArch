@@ -22,12 +22,14 @@ public protocol FlowStepping: AnyObject {
   func onNext()
 }
 
+public protocol FlowStepComponent: Component {}
+
 open class FlowStep<FlowContext, FlowComponent: ComponentProviding, FlowResultObject: FlowResult>: FlowStepping {
   public weak var flow: Flow<FlowContext, FlowComponent, FlowResultObject>?
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init(flow: Flow<FlowContext, FlowComponent, FlowResultObject>, context: FlowContext, component: FlowComponent) {
+  public init<T: FlowStepComponent>(flow: Flow<FlowContext, FlowComponent, FlowResultObject>, context: FlowContext, component: T) {
     self.flow = flow
     self.context = context
   }

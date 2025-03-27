@@ -53,8 +53,8 @@ fileprivate final class TestFlowModule: Flow<TestFlowContext, EmptyComponent, Te
     super.init(context: context, component: component, result: result)
     
     self.steps = [
-      TestTitleFlowStep(flow: self, context: context, component: component),
-      TestNameFlowStep(flow: self, context: context, component: component)
+      TestTitleFlowStep(flow: self, context: context, component: EmptyFlowComponent()),
+      TestNameFlowStep(flow: self, context: context, component: EmptyFlowComponent())
     ]
   }
 }
