@@ -10,7 +10,7 @@ import Combine
 
 public protocol FlowStepping: AnyObject {
   associatedtype FlowContext
-  associatedtype FlowComponent: Component
+  associatedtype FlowComponent: ComponentProviding
   associatedtype FlowResultObject: FlowResult
   var flow: Flow<FlowContext, FlowComponent, FlowResultObject>? { get }
   var context: FlowContext { get }
@@ -22,7 +22,7 @@ public protocol FlowStepping: AnyObject {
   func onNext()
 }
 
-open class FlowStep<FlowContext, FlowComponent: Component, FlowResultObject: FlowResult>: FlowStepping {
+open class FlowStep<FlowContext, FlowComponent: ComponentProviding, FlowResultObject: FlowResult>: FlowStepping {
   public weak var flow: Flow<FlowContext, FlowComponent, FlowResultObject>?
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []

@@ -31,7 +31,7 @@ fileprivate protocol FlowSupporting {
   @MainActor func runResultIsolated() async -> ResultObject?
 }
 
-open class Flow<Context, FlowComponent: Component, ResultObject: FlowResult>: FlowSupporting {
+open class Flow<Context, FlowComponent: ComponentProviding, ResultObject: FlowResult>: FlowSupporting {
   public typealias FlowStepType = FlowStep<Context, FlowComponent, ResultObject>
   public var result: ResultObject?
   public var steps: [FlowStepType] = []

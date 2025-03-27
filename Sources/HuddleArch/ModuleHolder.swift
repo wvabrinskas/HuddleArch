@@ -44,7 +44,7 @@ open class ModuleHolderContext: ModuleHoldingContext {
 open class ModuleHolderModule<Context: ModuleHoldingContext, C: Component, Router: Routing>: ModuleHolder, Module {
   public typealias Context = Context
   
-  public typealias Component = C
+  public typealias ModuleComponent = C
   
   public typealias Router = Router
   

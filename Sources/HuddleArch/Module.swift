@@ -9,22 +9,22 @@ import Foundation
 
 public protocol Module {
   associatedtype Context: ModuleHoldingContext
-  associatedtype Component
+  associatedtype ModuleComponent: Component
   associatedtype Router: Routing
   
   var holder: ModuleHolding? { get }
   var router: Router? { get }
   
-  init(holder: ModuleHolding?, context: Context, component: Component)
+  init(holder: ModuleHolding?, context: Context, component: ModuleComponent)
   func onActive()
 }
 
-open class ModuleObject<Context: ModuleHoldingContext, Component, Router: Routing>: NSObject, Module {
+open class ModuleObject<Context: ModuleHoldingContext, ModuleComponent: Component, Router: Routing>: NSObject, Module {
   open weak var holder: ModuleHolding?
   
   @MainActor open var router: Router?
   
-  public required init(holder: ModuleHolding?, context: Context, component: Component) {
+  public required init(holder: ModuleHolding?, context: Context, component: ModuleComponent) {
     self.holder = holder
   }
   
