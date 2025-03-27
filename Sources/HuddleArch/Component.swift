@@ -24,14 +24,30 @@ public protocol ComponentProviding: AnyObject {
   subscript<T>(dynamicMember member: String) -> T { get }
 }
 
-@dynamicMemberLookup
-open class Component: ComponentProviding {
-  public let parent: Component?
-
+private final class DependencyStore {
   private var sharedDependencies: [String: Any] = [:]
   
   deinit {
     sharedDependencies = [:]
+  }
+  
+  fileprivate subscript<T>(dynamicMember member: String) -> T? {
+    get {
+      sharedDependencies[member] as? T
+    } set {
+      sharedDependencies[member] = newValue
+    }
+  }
+}
+
+@dynamicMemberLookup
+open class Component: ComponentProviding {
+  public let parent: Component?
+
+  private var dependencyStore: DependencyStore = .init()
+    
+  deinit {
+    dependencyStore = .init()
   }
   
   public init(parent: Component) {
@@ -69,14 +85,13 @@ open class Component: ComponentProviding {
     fatalError("Cannot find \(member): \(String(describing: T.self)) in component graph: \(tree) ")
   }
   
-  // this currently causes a memory leak
   public func shared<T>(_ block: () -> T) -> T {
-    if let oldDep = sharedDependencies[String(describing: T.self)] {
+    if let oldDep: T? = dependencyStore[dynamicMember: String(describing: T.self)] {
       return oldDep as? T ?? block()
     }
     
     let dep = block()
-    sharedDependencies[String(describing: T.self)] = dep
+    dependencyStore[dynamicMember: String(describing: T.self)] = dep
     return dep
   }
 }
