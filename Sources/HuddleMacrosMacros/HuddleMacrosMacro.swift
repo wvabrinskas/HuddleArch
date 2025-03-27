@@ -71,30 +71,35 @@ public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
         continue
       }
       
-      if variableDec.accessorBlock == nil,
-         variableDec.initializer == nil {
-        
-        // create init function
-        let selfExpression = DeclReferenceExprSyntax(baseName: .keyword(.`self`))
-        let calledExpression = MemberAccessExprSyntax(base: selfExpression, 
-                                                      period: .periodToken(),
-                                                      declName: DeclReferenceExprSyntax(baseName: .identifier(variableDec.pattern.description)))
-        
-        let equals = AssignmentExprSyntax(equal: .equalToken())
-        
-        let setExpression = DeclReferenceExprSyntax(baseName: .identifier("parent"))
-        let setCalledExpression = MemberAccessExprSyntax(base: setExpression,
-                                                         period: .periodToken(),
-                                                         declName: DeclReferenceExprSyntax(baseName: .identifier(variableDec.pattern.description)))
-        
-        let wholeSetExpression = SequenceExprSyntax(elements: .init(arrayLiteral: .init(calledExpression),
-                                                                    .init(equals),
-                                                                    .init(setCalledExpression)))
-        
-        
-        codeBlockItemSyntax.append(.init(item: .expr(.init(wholeSetExpression))))
-      } else {
+      
+      if variableDec.accessorBlock == nil {
         properties.append("\"\(variableDec.pattern.description)\": \(variableDec.pattern.description)")
+
+        if variableDec.initializer == nil {
+          // create init function
+          let selfExpression = DeclReferenceExprSyntax(baseName: .keyword(.`self`))
+          let calledExpression = MemberAccessExprSyntax(base: selfExpression,
+                                                        period: .periodToken(),
+                                                        declName: DeclReferenceExprSyntax(baseName: .identifier(variableDec.pattern.description)))
+          
+          let equals = AssignmentExprSyntax(equal: .equalToken())
+          
+          let setExpression = DeclReferenceExprSyntax(baseName: .identifier("parent"))
+          let setCalledExpression = MemberAccessExprSyntax(base: setExpression,
+                                                           period: .periodToken(),
+                                                           declName: DeclReferenceExprSyntax(baseName: .identifier(variableDec.pattern.description)))
+          
+          let wholeSetExpression = SequenceExprSyntax(elements: .init(arrayLiteral: .init(calledExpression),
+                                                                      .init(equals),
+                                                                      .init(setCalledExpression)))
+          
+          
+          codeBlockItemSyntax.append(.init(item: .expr(.init(wholeSetExpression))))
+        }
+
+      } else {
+        // lazy access on blocks and lazy inits
+        properties.append("\"\(variableDec.pattern.description)\": { self.\(variableDec.pattern.description) } ")
       }
     }
     
@@ -112,18 +117,6 @@ public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
     let codeBlockSuperCall = CodeBlockItemSyntax(item: .expr(.init(itemExpression)))
     
     codeBlockItemSyntax.append(codeBlockSuperCall)
-    
-    let setMirror = """
-                    self.mirrorToUse = customMirror
-                    """
-    
-    let parsedSetMirror = Parser.parse(source: setMirror)
-
-    if let setMirrorDecl = parsedSetMirror.statements.compactMap({ statement in
-      statement.item.as(SequenceExprSyntax.self)
-    }).first {
-      codeBlockItemSyntax.append(CodeBlockItemSyntax(item: .expr(.init(setMirrorDecl))))
-    }
     
     let initFunctionDecl = MemberBlockItemSyntax(decl: InitializerDeclSyntax(attributes: .init([]),
                                                                              modifiers: .init([DeclModifierSyntax(name: .keyword(SwiftSyntax.Keyword.public)),

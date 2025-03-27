@@ -30,7 +30,6 @@ open class Component: ComponentProviding {
 
   private var sharedDependencies: [String: Any] = [:]
   private var cachedProperties: [String: Any] = [:]
-  public var mirrorToUse: Mirror?
   
   public init(parent: Component) {
     self.parent = parent
@@ -52,7 +51,7 @@ open class Component: ComponentProviding {
     while let comp = component {
       tree += "\(tree.isEmpty ? "" : " -> ")\(String(describing: comp))"
       
-      let mirror = mirrorToUse ?? Mirror(reflecting: comp)
+      let mirror = Mirror(reflecting: comp)
       
       for c in mirror.children {
         if c.label == member, let value = c.value as? T {
