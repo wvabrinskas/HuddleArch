@@ -19,8 +19,8 @@ public protocol FlowResult: Sendable {
   func updating(_ with: Self) -> Self
 }
 
-fileprivate protocol FlowModuleSupporting {
-  associatedtype FlowType: Flowing
+fileprivate protocol FlowSupporting {
+  associatedtype FlowType: FlowStepping
   associatedtype ResultObject: FlowResult
   var result: ResultObject? { get set }
   var steps: [FlowType] { get }
@@ -31,16 +31,16 @@ fileprivate protocol FlowModuleSupporting {
   @MainActor func runResultIsolated() async -> ResultObject?
 }
 
-open class FlowModule<FC, ResultObject: FlowResult>: FlowModuleSupporting {
-  public typealias FlowType = Flow<FC, ResultObject>
+open class Flow<Context, FlowComponent: Component, ResultObject: FlowResult>: FlowSupporting {
+  public typealias FlowStepType = FlowStep<Context, FlowComponent, ResultObject>
   public var result: ResultObject?
-  public var steps: [FlowType] = []
+  public var steps: [FlowStepType] = []
   public var onComplete: (() -> ())? = nil
   
   private var stepIndex: Int = 0
-  private var context: FC
+  private var context: Context
   
-  public init(context: FC, result: (@Sendable () -> ResultObject?)? = nil) {
+  public init(context: Context, component: FlowComponent, result: (@Sendable () -> ResultObject?)? = nil) {
     self.context = context
     self.result = result?()
   }

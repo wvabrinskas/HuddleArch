@@ -8,10 +8,11 @@
 import Foundation
 import Combine
 
-public protocol Flowing: AnyObject {
+public protocol FlowStepping: AnyObject {
   associatedtype FlowContext
+  associatedtype FlowComponent: Component
   associatedtype FlowResultObject: FlowResult
-  var flowModule: FlowModule<FlowContext, FlowResultObject>? { get }
+  var flow: Flow<FlowContext, FlowComponent, FlowResultObject>? { get }
   var context: FlowContext { get }
   var cancellables: Set<AnyCancellable> { get set }
   
@@ -21,13 +22,13 @@ public protocol Flowing: AnyObject {
   func onNext()
 }
 
-open class Flow<FlowContext, FlowResultObject: FlowResult>: Flowing {
-  public weak var flowModule: FlowModule<FlowContext, FlowResultObject>?
+open class FlowStep<FlowContext, FlowComponent: Component, FlowResultObject: FlowResult>: FlowStepping {
+  public weak var flow: Flow<FlowContext, FlowComponent, FlowResultObject>?
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init<FComponent: Component>(flowModule: FlowModule<FlowContext, FlowResultObject>, context: FlowContext, component: FComponent) {
-    self.flowModule = flowModule
+  public init(flow: Flow<FlowContext, FlowComponent, FlowResultObject>, context: FlowContext) {
+    self.flow = flow
     self.context = context
   }
   
@@ -39,7 +40,7 @@ open class Flow<FlowContext, FlowResultObject: FlowResult>: Flowing {
   
   open func run(flowResult: FlowResultObject? = nil) async -> FlowResultObject? {
     if let flowResult {
-      return flowModule?.result?.updating(flowResult)
+      return flow?.result?.updating(flowResult)
     }
     
     return nil
@@ -53,7 +54,7 @@ open class Flow<FlowContext, FlowResultObject: FlowResult>: Flowing {
 
 
 public extension AnyCancellable {
-  func disposeOnNext<T: Flowing>(flow: T) {
+  func disposeOnNext<T: FlowStepping>(flow: T) {
     self.store(in: &flow.cancellables)
   }
 }

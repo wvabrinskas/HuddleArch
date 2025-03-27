@@ -31,7 +31,7 @@ struct TestFlowResult: FlowResult, Equatable {
 }
 
 
-fileprivate final class TestTitleFlow: Flow<TestFlowContext, TestFlowResult> {
+fileprivate final class TestTitleFlowStep: FlowStep<TestFlowContext, EmptyComponent, TestFlowResult> {
   
   override func run(flowResult: TestFlowResult? = nil) async -> TestFlowResult? {
     let newFlowResult = TestFlowResult(title: "title")
@@ -39,7 +39,7 @@ fileprivate final class TestTitleFlow: Flow<TestFlowContext, TestFlowResult> {
   }
 }
 
-fileprivate final class TestNameFlow: Flow<TestFlowContext, TestFlowResult> {
+fileprivate final class TestNameFlowStep: FlowStep<TestFlowContext, EmptyComponent, TestFlowResult> {
   
   override func run(flowResult: TestFlowResult? = nil) async -> TestFlowResult? {
     let newFlowResult = TestFlowResult(name: "name")
@@ -47,14 +47,14 @@ fileprivate final class TestNameFlow: Flow<TestFlowContext, TestFlowResult> {
   }
 }
 
-fileprivate final class TestFlowModule: FlowModule<TestFlowContext, TestFlowResult> {
+fileprivate final class TestFlowModule: Flow<TestFlowContext, EmptyComponent, TestFlowResult> {
   
-  override init(context: TestFlowContext, result: (@Sendable () -> TestFlowResult?)? = nil) {
-    super.init(context: context, result: result)
+  override init(context: TestFlowContext, component: EmptyComponent, result: (@Sendable () -> TestFlowResult?)? = nil) {
+    super.init(context: context, component: component, result: result)
     
     self.steps = [
-      TestTitleFlow(flowModule: self, context: context, component: EmptyComponent()),
-      TestNameFlow(flowModule: self, context: context, component: EmptyComponent())
+      TestTitleFlowStep(flow: self, context: context),
+      TestNameFlowStep(flow: self, context: context)
     ]
   }
 }
@@ -63,7 +63,7 @@ fileprivate final class TestFlowModule: FlowModule<TestFlowContext, TestFlowResu
 
 public class FlowTests: XCTestCase {
   
-  fileprivate let flow = TestFlowModule(context: .init()) {
+  fileprivate let flow = TestFlowModule(context: .init(), component: .init()) {
     .init()
   }
   
