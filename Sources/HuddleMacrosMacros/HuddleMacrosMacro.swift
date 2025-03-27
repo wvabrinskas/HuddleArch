@@ -2,6 +2,7 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftParser
 
 public struct BuildingImplMacro: MemberMacro {
   public static func expansion(of node: AttributeSyntax,
@@ -27,8 +28,22 @@ public struct BuildingImplMacro: MemberMacro {
   }
 }
 
-public struct ComponentImplMacro: MemberMacro {
-  public static func expansion(of node: AttributeSyntax, 
+public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
+  public static func expansion(of node: SwiftSyntax.AttributeSyntax,
+                               
+                               attachedTo declaration: some SwiftSyntax.DeclGroupSyntax,
+                               providingExtensionsOf type: some SwiftSyntax.TypeSyntaxProtocol,
+                               conformingTo protocols: [SwiftSyntax.TypeSyntax],
+                               in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
+
+    let extensionDecl = try ExtensionDeclSyntax("""
+                                                extension \(type.trimmed): CustomReflectable {
+                                                }
+                                                """)
+    return [extensionDecl]
+  }
+  
+  public static func expansion(of node: AttributeSyntax,
                                providingMembersOf declaration: some DeclGroupSyntax,
                                in context: some MacroExpansionContext) throws -> [DeclSyntax] {
     
@@ -48,11 +63,16 @@ public struct ComponentImplMacro: MemberMacro {
                                                                         type: IdentifierTypeSyntax(name: .identifier("Component")))]
     var codeBlockItemSyntax: [CodeBlockItemSyntax] = []
     
-    members.forEach { m in
-      if let variable = m.decl.as(VariableDeclSyntax.self),
-         let variableDec = variable.bindings.first,
-         variableDec.accessorBlock == nil,
-         variableDec.initializer == nil { // dont add for pre defined variables already
+    var properties: [String] = []
+
+    for m in members {
+      guard let variable = m.decl.as(VariableDeclSyntax.self),
+            let variableDec = variable.bindings.first else {
+        continue
+      }
+      
+      if variableDec.accessorBlock == nil,
+         variableDec.initializer == nil {
         
         // create init function
         let selfExpression = DeclReferenceExprSyntax(baseName: .keyword(.`self`))
@@ -70,8 +90,11 @@ public struct ComponentImplMacro: MemberMacro {
         let wholeSetExpression = SequenceExprSyntax(elements: .init(arrayLiteral: .init(calledExpression),
                                                                     .init(equals),
                                                                     .init(setCalledExpression)))
-
+        
+        
         codeBlockItemSyntax.append(.init(item: .expr(.init(wholeSetExpression))))
+      } else {
+        properties.append("\"\(variableDec.pattern.description)\": \(variableDec.pattern.description)")
       }
     }
     
@@ -90,6 +113,18 @@ public struct ComponentImplMacro: MemberMacro {
     
     codeBlockItemSyntax.append(codeBlockSuperCall)
     
+    let setMirror = """
+                    self.mirrorToUse = customMirror
+                    """
+    
+    let parsedSetMirror = Parser.parse(source: setMirror)
+
+    if let setMirrorDecl = parsedSetMirror.statements.compactMap({ statement in
+      statement.item.as(SequenceExprSyntax.self)
+    }).first {
+      codeBlockItemSyntax.append(CodeBlockItemSyntax(item: .expr(.init(setMirrorDecl))))
+    }
+    
     let initFunctionDecl = MemberBlockItemSyntax(decl: InitializerDeclSyntax(attributes: .init([]),
                                                                              modifiers: .init([DeclModifierSyntax(name: .keyword(SwiftSyntax.Keyword.public)),
                                                                                                DeclModifierSyntax(name: .keyword(SwiftSyntax.Keyword.override))]),
@@ -103,7 +138,27 @@ public struct ComponentImplMacro: MemberMacro {
     
     initDecls.append(initFunctionDecl)
 
-    return initDecls.map { $0.decl }
+    let joined = properties.joined(separator: ", \n")
+
+    let mirrorConformanceString = """
+                                     public lazy var customMirror: Mirror = {
+                                         return Mirror(self,
+                                                       children: [
+                                                        \(joined)
+                                                      ])
+                                     }()
+                                  """
+    
+    let parsed = Parser.parse(source: mirrorConformanceString)
+    
+    let decl =  parsed.statements.compactMap { statement in
+      statement.item.as(VariableDeclSyntax.self)
+    }.first
+    
+    var decls = [DeclSyntax(decl)].compactMap { $0 }
+    
+    decls.append(contentsOf: initDecls.map { $0.decl })
+    return decls
   }
 }
 

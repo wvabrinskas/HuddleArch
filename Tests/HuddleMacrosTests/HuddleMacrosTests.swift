@@ -60,6 +60,10 @@ final class HuddleMacrosTests: XCTestCase {
               public let objectA: ObjectA
               public let objectB: ObjectB
               public let objectC: ObjectC
+            
+              public var objectD: ObjectD { 
+                .init()
+              }
             }
             """,
             expandedSource: """
@@ -73,12 +77,30 @@ final class HuddleMacrosTests: XCTestCase {
               public let objectB: ObjectB
               public let objectC: ObjectC
 
+              public var objectD: ObjectD { 
+                .init()
+              }
+
+                var customMirror: Mirror {
+                       return Mirror(self,
+                                     children: [
+                                      "objectA": objectA,
+                                                 "objectB": objectB,
+                                                 "objectC": objectC,
+                                                 "objectD": objectD
+                                    ])
+                   }
+
                 public override init(parent: Component) {
                     self.objectA = parent.objectA
                     self.objectB = parent.objectB
                     self.objectC = parent.objectC
                     super.init(parent: parent)
+                    self.mirrorToUse = customMirror
                 }
+            }
+            
+            extension RootComponentImpl: CustomReflectable {
             }
             """,
             macros: testMacros

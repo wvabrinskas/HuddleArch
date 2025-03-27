@@ -27,10 +27,12 @@ final class RootComponentImpl: Component, RootComponent {
   var objectB: ObjectB
   var objectC: ObjectC
   
-//  var objectCD: ObjectC {
-//    ObjectC()
-//  }
+  var objectCD: ObjectC {
+    ObjectC()
+  }
 }
+
+let component = RootComponentImpl(parent: EmptyComponent())
 
 protocol FirstSubComponent: Component {
   var objectA: ObjectA { get }

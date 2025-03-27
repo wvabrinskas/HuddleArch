@@ -3,6 +3,7 @@ import HuddleArch
 
 /// A macro that expands the Components initializer
 @attached(member, names: arbitrary, conformances: ComponentProviding)
+@attached(extension, conformances: CustomReflectable, names: arbitrary)
 public macro ComponentImpl() = #externalMacro(module: "HuddleMacrosMacros", type: "ComponentImplMacro")
 
 /// A macro that adds the conformance for `ViewBuilding` for a particular builder
