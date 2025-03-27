@@ -27,7 +27,7 @@ open class FlowStep<FlowContext, FlowComponent: ComponentProviding, FlowResultOb
   public let context: FlowContext
   public var cancellables: Set<AnyCancellable> = []
   
-  public init(flow: Flow<FlowContext, FlowComponent, FlowResultObject>, context: FlowContext) {
+  public init(flow: Flow<FlowContext, FlowComponent, FlowResultObject>, context: FlowContext, component: FlowComponent) {
     self.flow = flow
     self.context = context
   }
