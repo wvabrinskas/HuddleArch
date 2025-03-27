@@ -9,3 +9,4 @@ xcuserdata/
 Package.resolved
 .swiftpm/xcode/package.xcworkspace/xcuserdata/*
 .swiftpm/xcode/package.xcworkspace/xcuserdata/*.xcuserdatad/*
+*.xcuserstate
