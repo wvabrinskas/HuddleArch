@@ -29,7 +29,10 @@ open class Component: ComponentProviding {
   public let parent: Component?
 
   private var sharedDependencies: [String: Any] = [:]
-  private var cachedProperties: [String: Any] = [:]
+  
+  deinit {
+    sharedDependencies = [:]
+  }
   
   public init(parent: Component) {
     self.parent = parent
@@ -40,10 +43,6 @@ open class Component: ComponentProviding {
   }
 
   public subscript<T>(dynamicMember member: String) -> T {
-    if let cached = cachedProperties[member], let val = cached as? T {
-      return val
-    }
-    
     var component: Component? = self
     
     var tree: String = ""
@@ -56,11 +55,9 @@ open class Component: ComponentProviding {
       for c in mirror.children {
         if c.label == member {
           if let value = c.value as? T {
-            cachedProperties[member] = value
             return value
           } else if let valueBlock = c.value as? () -> T {
             let value = valueBlock()
-            cachedProperties[member] = value
             return value
           }
         }
@@ -72,6 +69,7 @@ open class Component: ComponentProviding {
     fatalError("Cannot find \(member): \(String(describing: T.self)) in component graph: \(tree) ")
   }
   
+  // this currently causes a memory leak
   public func shared<T>(_ block: () -> T) -> T {
     if let oldDep = sharedDependencies[String(describing: T.self)] {
       return oldDep as? T ?? block()

@@ -134,12 +134,12 @@ public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
     let joined = properties.joined(separator: ", \n")
 
     let mirrorConformanceString = """
-                                     public lazy var customMirror: Mirror = {
+                                     public var customMirror: Mirror {
                                          return Mirror(self,
                                                        children: [
                                                         \(joined)
                                                       ])
-                                     }()
+                                     }
                                   """
     
     let parsed = Parser.parse(source: mirrorConformanceString)
