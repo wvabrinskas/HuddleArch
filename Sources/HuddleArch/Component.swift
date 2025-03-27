@@ -54,9 +54,15 @@ open class Component: ComponentProviding {
       let mirror = Mirror(reflecting: comp)
       
       for c in mirror.children {
-        if c.label == member, let value = c.value as? T {
-          cachedProperties[member] = value
-          return value
+        if c.label == member {
+          if let value = c.value as? T {
+            cachedProperties[member] = value
+            return value
+          } else if let valueBlock = c.value as? () -> T {
+            let value = valueBlock()
+            cachedProperties[member] = value
+            return value
+          }
         }
       }
       

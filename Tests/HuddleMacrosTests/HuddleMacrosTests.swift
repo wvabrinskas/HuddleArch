@@ -87,8 +87,11 @@ final class HuddleMacrosTests: XCTestCase {
                                       "objectA": objectA,
                                                  "objectB": objectB,
                                                  "objectC": objectC,
-                                                 "objectD": {
-                                                         self.objectD
+                                                 "objectD": { [weak self] in
+                                                  guard let self else {
+                                                          fatalError("Mirror failed to find self")
+                                                      }
+                                                  return objectD
                                                      }
                                     ])
                    }()

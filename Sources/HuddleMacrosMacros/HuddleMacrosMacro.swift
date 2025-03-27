@@ -99,7 +99,7 @@ public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
 
       } else {
         // lazy access on blocks and lazy inits
-        properties.append("\"\(variableDec.pattern.description)\": { self.\(variableDec.pattern.description) } ")
+        properties.append("\"\(variableDec.pattern.description)\": { [weak self] in \n guard let self else { fatalError(\"Mirror failed to find self\") } \n return \(variableDec.pattern.description) } ")
       }
     }
     
