@@ -23,7 +23,7 @@ final class HuddleMacrosTests: XCTestCase {
           public protocol TestBuilding: ViewBuilding, ModuleBuilder {
           }
           
-          @Building(TestRouter, TestViewComponent)
+          @Building(TestRouter.self, TestViewComponent.self)
           public struct TestBuilder: TestBuilding {
           }
           

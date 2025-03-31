@@ -11,9 +11,9 @@ public struct BuildingImplMacro: MemberMacro {
     
     guard let protocolDecl = declaration.as(StructDeclSyntax.self),
           let firstAttribute = protocolDecl.attributes.first?.as(AttributeSyntax.self),
-          let router = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(DeclReferenceExprSyntax.self)?.baseName.text,
+          let router = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(MemberAccessExprSyntax.self)?.base?.as(DeclReferenceExprSyntax.self)?.baseName.text,
           let componentIndex = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?.index(at: 1),
-          let component = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?[componentIndex].expression.as(DeclReferenceExprSyntax.self)?.baseName.text else {
+          let component = firstAttribute.arguments?.as(LabeledExprListSyntax.self)?[componentIndex].expression.as(MemberAccessExprSyntax.self)?.base?.as(DeclReferenceExprSyntax.self)?.baseName.text else {
       return []
     }
     

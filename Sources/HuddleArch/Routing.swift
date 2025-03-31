@@ -8,6 +8,16 @@
 import Foundation
 import SwiftUI
 
+public protocol AutoBuildingRouting {
+  static var description: String { get }
+}
+
+extension AutoBuildingRouting {
+  public static var description: String {
+    String(describing: Self.Type.self)
+  }
+}
+
 @MainActor
 public protocol Routing: AnyObject {
   func rootView() -> any View
