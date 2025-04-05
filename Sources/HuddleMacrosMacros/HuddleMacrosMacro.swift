@@ -28,6 +28,91 @@ public struct BuildingImplMacro: MemberMacro {
   }
 }
 
+// MARK: - Root Component
+
+public struct RootComponentImplMacro: MemberMacro, ExtensionMacro {
+  public static func expansion(of node: SwiftSyntax.AttributeSyntax,
+                               
+                               attachedTo declaration: some SwiftSyntax.DeclGroupSyntax,
+                               providingExtensionsOf type: some SwiftSyntax.TypeSyntaxProtocol,
+                               conformingTo protocols: [SwiftSyntax.TypeSyntax],
+                               in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
+
+    let extensionDecl = try ExtensionDeclSyntax("""
+                                                extension \(type.trimmed): CustomReflectable {
+                                                }
+                                                """)
+    return [extensionDecl]
+  }
+  
+  public static func expansion(of node: AttributeSyntax,
+                               providingMembersOf declaration: some DeclGroupSyntax,
+                               in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+    
+    guard let protocolDecl = declaration.as(ClassDeclSyntax.self) else {
+      // throw error
+      return []
+    }
+    
+    let members = protocolDecl.memberBlock.members
+      
+    var codeBlockItemSyntax: [CodeBlockItemSyntax] = []
+    
+    var properties: [String] = []
+
+    for m in members {
+      guard let variable = m.decl.as(VariableDeclSyntax.self),
+            let variableDec = variable.bindings.first else {
+        continue
+      }
+      
+      
+      if variableDec.accessorBlock == nil {
+        properties.append("\"\(variableDec.pattern.description)\": \(variableDec.pattern.description)")
+      } else {
+        // lazy access on blocks and lazy inits
+        properties.append("\"\(variableDec.pattern.description)\": { [weak self] in \n guard let self else { fatalError(\"Mirror failed to find self\") } \n return \(variableDec.pattern.description) } ")
+      }
+    }
+    
+    let superExpression = SuperExprSyntax(superKeyword: .keyword(.super))
+    let calledExpression = MemberAccessExprSyntax(base: superExpression, period: .periodToken(), declName: DeclReferenceExprSyntax(baseName: .keyword(.`init`)))
+    
+    let itemExpression = FunctionCallExprSyntax(calledExpression: calledExpression,
+                                                leftParen: .leftParenToken(),
+                                                arguments: LabeledExprListSyntax([LabeledExprSyntax(label: .identifier("parent"),
+                                                                                                    colon: .colonToken(),
+                                                                                                    expression: DeclReferenceExprSyntax(baseName: .identifier("nil")))]),
+                                                rightParen: .rightParenToken(),
+                                                additionalTrailingClosures: .init([]))
+    
+    let codeBlockSuperCall = CodeBlockItemSyntax(item: .expr(.init(itemExpression)))
+    
+    codeBlockItemSyntax.append(codeBlockSuperCall)
+
+    let joined = properties.joined(separator: ", \n")
+
+    let mirrorConformanceString = """
+                                     public var customMirror: Mirror {
+                                         return Mirror(self,
+                                                       children: [
+                                                        \(joined)
+                                                      ])
+                                     }
+                                  """
+    
+    let parsed = Parser.parse(source: mirrorConformanceString)
+    
+    let decl =  parsed.statements.compactMap { statement in
+      statement.item.as(VariableDeclSyntax.self)
+    }.first
+    
+    return [DeclSyntax(decl)].compactMap { $0 }
+  }
+}
+
+// MARK: - Child component
+
 public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
   public static func expansion(of node: SwiftSyntax.AttributeSyntax,
                                
@@ -159,6 +244,7 @@ public struct ComponentImplMacro: MemberMacro, ExtensionMacro {
 struct HuddleMacrosPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
       ComponentImplMacro.self,
-      BuildingImplMacro.self
+      BuildingImplMacro.self,
+      RootComponentImplMacro.self
     ]
 }

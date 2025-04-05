@@ -10,7 +10,8 @@ import HuddleMacrosMacros
 
 let testMacros: [String: Macro.Type] = [
   "ComponentImpl": ComponentImplMacro.self,
-  "Building": BuildingImplMacro.self
+  "Building": BuildingImplMacro.self,
+  "RootComponentImpl": RootComponentImplMacro.self
 ]
 #endif
 
@@ -26,11 +27,11 @@ final class HuddleMacrosTests: XCTestCase {
               var objectC: ObjectC { get }
             }
             
-            @ComponentImpl
+            @RootComponentImpl
             public final class RootComponentImpl: Component, RootComponent {
-              public let objectA: ObjectA
-              public let objectB: ObjectB
-              public let objectC: ObjectC
+              public let objectA: ObjectA = .init()
+              public let objectB: ObjectB = .init()
+              public let objectC: ObjectC = .init()
             }
             """,
             expandedSource: """
@@ -40,10 +41,10 @@ final class HuddleMacrosTests: XCTestCase {
               var objectC: ObjectC { get }
             }
             public final class RootComponentImpl: Component, RootComponent {
-              public let objectA: ObjectA
-              public let objectB: ObjectB
-              public let objectC: ObjectC
-            
+              public let objectA: ObjectA = .init()
+              public let objectB: ObjectB = .init()
+              public let objectC: ObjectC = .init()
+
                 public var customMirror: Mirror {
                        return Mirror(self,
                                      children: [
@@ -52,15 +53,8 @@ final class HuddleMacrosTests: XCTestCase {
                                                  "objectC": objectC
                                     ])
                    }
-            
-                public override init(parent: Component) {
-                    self.objectA = parent.objectA
-                    self.objectB = parent.objectB
-                    self.objectC = parent.objectC
-                    super.init(parent: parent)
-                }
             }
-            
+
             extension RootComponentImpl: CustomReflectable {
             }
             """,

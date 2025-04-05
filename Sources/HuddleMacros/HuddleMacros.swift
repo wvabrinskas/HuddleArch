@@ -6,6 +6,11 @@ import HuddleArch
 @attached(extension, conformances: CustomReflectable, names: arbitrary)
 public macro ComponentImpl() = #externalMacro(module: "HuddleMacrosMacros", type: "ComponentImplMacro")
 
+/// A macro that expands the RootComponents initializer
+@attached(member, names: arbitrary, conformances: ComponentProviding)
+@attached(extension, conformances: CustomReflectable, names: arbitrary)
+public macro RootComponentImpl() = #externalMacro(module: "HuddleMacrosMacros", type: "RootComponentImplMacro")
+
 /// A macro that adds the conformance for `ViewBuilding` for a particular builder
 /// router: The Routing type for the specific builder
 /// component: The ViewComponent type for the specific builder.
