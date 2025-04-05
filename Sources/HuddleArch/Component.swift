@@ -86,10 +86,10 @@ open class Component: ComponentProviding {
   }
   
   public func shared<T>(_ block: () -> T) -> T {
-    if let oldDep: T? = dependencyStore[dynamicMember: String(describing: T.self)] {
+    if let oldDep: T? = dependencyStore[dynamicMember: String(describing: T.self)], oldDep != nil {
       return oldDep as? T ?? block()
     }
-    
+      
     let dep = block()
     dependencyStore[dynamicMember: String(describing: T.self)] = dep
     return dep
