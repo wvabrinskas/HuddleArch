@@ -7,11 +7,11 @@ import SwiftUI
 import HuddleArch
 
 public protocol ___VARIABLE_moduleName:identifier___ViewComponent: ViewComponent {
-  var module: ___VARIABLE_moduleName:identifier___Module { get }
+  var module: ___VARIABLE_moduleName:identifier___Supporting { get }
 }
 
 public struct ___VARIABLE_moduleName:identifier___ViewComponentImpl: ___VARIABLE_moduleName:identifier___ViewComponent {
-  public var module: ___VARIABLE_moduleName:identifier___Module
+  public var module: ___VARIABLE_moduleName:identifier___Supporting
   public var moduleHolder: (any ModuleHolding)?
 }
 
@@ -21,11 +21,11 @@ public protocol ___VARIABLE_moduleName:identifier___Routing: Router {
 
 @MainActor
 public final class ___VARIABLE_moduleName:identifier___Router: Router, ___VARIABLE_moduleName:identifier___Routing {
-  private let module: ___VARIABLE_moduleName:identifier___Module
-  private var moduleHolder: ___VARIABLE_moduleHolderClassName:identifier___?
+  private let module: ___VARIABLE_moduleName:identifier___Supporting
+  private var moduleHolder: ___VARIABLE_moduleHolderClassName:identifier___ModuleHolder?
   
   public init(component: ___VARIABLE_moduleName:identifier___ViewComponent) {
-    self.moduleHolder = component.moduleHolder as? ___VARIABLE_moduleHolderClassName:identifier___
+    self.moduleHolder = component.moduleHolder as? ___VARIABLE_moduleHolderClassName:identifier___ModuleHolder
     self.module = component.module
     
     super.init()
