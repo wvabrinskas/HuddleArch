@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Kind</key>
+	<string>Xcode.IDEKit.TextSubstitutionFileTemplateKind</string>
+	<key>Platforms</key>
+	<array>
+		<string>com.apple.platform.iphoneos</string>
+	</array>
+	<key>AllowedTypes</key>
+	<array>
+		<string>public.swift-source</string>
+	</array>
+	<key>Options</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>moduleName</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>Module name:</string>
+			<key>Description</key>
+			<string>The name of the Module you'd like to create, excluding the `Module` suffix.</string>
+			<key>Type</key>
+			<string>text</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>moduleHolderContextClass</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>ModuleHolderContext class name:</string>
+			<key>Description</key>
+			<string>The ModuleHolderContext classname</string>
+			<key>Type</key>
+			<string>text</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>moduleHolderClassName</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>ModuleHolder class name:</string>
+			<key>Description</key>
+			<string>The ModuleHolder classname</string>
+			<key>Type</key>
+			<string>text</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>componentClass</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>The component class name:</string>
+			<key>Description</key>
+			<string>The component classname</string>
+			<key>Type</key>
+			<string>text</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -21,7 +21,10 @@
         },
         "subpath" : "swift-syntax"
       }
+    ],
+    "prebuilts" : [
+
     ]
   },
-  "version" : 6
+  "version" : 7
 }
