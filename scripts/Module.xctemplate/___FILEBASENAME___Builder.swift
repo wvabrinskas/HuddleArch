@@ -6,15 +6,15 @@ import Foundation
 import HuddleArch
 import HuddleMacros
 
-public protocol ___VARIABLE_moduleName:identifier___Building: ViewBuilding, ModuleBuilder {}
+public protocol ___VARIABLE_productName:identifier___Building: ViewBuilding, ModuleBuilder {}
 
-@Building(___VARIABLE_moduleName:identifier___Router, ___VARIABLE_moduleName:identifier___ViewComponentImpl)
-public struct ___VARIABLE_moduleName:identifier___Builder: ___VARIABLE_moduleName:identifier___Building {
-  public static func build(parentComponent: Component, holder: ModuleHolding?, context: ___VARIABLE_parentModuleHolderContextClass:identifier___) -> ___VARIABLE_moduleName:identifier___Module {
-      let component = ___VARIABLE_moduleName:identifier___ModuleComponentImpl(parent: parentComponent)
-      let module = ___VARIABLE_moduleName:identifier___Module(holder: holder, context: context, component: component)
+@Building(___VARIABLE_productName:identifier___Router, ___VARIABLE_productName:identifier___ViewComponentImpl)
+public struct ___VARIABLE_productName:identifier___Builder: ___VARIABLE_productName:identifier___Building {
+  public static func build(parentComponent: Component, holder: ModuleHolding?, context: ___VARIABLE_parentModuleHolderContextClass:identifier___) -> ___VARIABLE_productName:identifier___Module {
+      let component = ___VARIABLE_productName:identifier___ModuleComponentImpl(parent: parentComponent)
+      let module = ___VARIABLE_productName:identifier___Module(holder: holder, context: context, component: component)
 
-      let viewComponent = ___VARIABLE_moduleName:identifier___ViewComponentImpl(module: module, moduleHolder: holder)
+      let viewComponent = ___VARIABLE_productName:identifier___ViewComponentImpl(module: module, moduleHolder: holder)
       module.router = buildRouter(component: viewComponent)
       
       return module

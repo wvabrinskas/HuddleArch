@@ -7,6 +7,6 @@ import SwiftUI
 import HuddleArch
 
 @Observable
-public final class ___VARIABLE_moduleName:identifier___ViewModel {
+public final class ___VARIABLE_productName:identifier___ViewModel {
 
 }

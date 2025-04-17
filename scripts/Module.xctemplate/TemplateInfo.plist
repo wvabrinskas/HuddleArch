@@ -16,7 +16,7 @@
 	<array>
 		<dict>
 			<key>Identifier</key>
-			<string>moduleName</string>
+			<string>productName</string>
 			<key>NotPersisted</key>
 			<string>true</string>
 			<key>Required</key>
