@@ -33,6 +33,7 @@ public class ___VARIABLE_productName:identifier___ModuleHolder: ModuleHolder, __
   private let component: ___VARIABLE_productName:identifier___Component
   private let context: ___VARIABLE_productName:identifier___ModuleHolderContext
 
+  @MainActor
   public required init(holder: ModuleHolding? = nil,
                        context: ___VARIABLE_productName:identifier___ModuleHolderContext,
                        component: ___VARIABLE_productName:identifier___ModuleComponentImpl) {
