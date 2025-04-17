@@ -14,7 +14,8 @@ public protocol Module {
   
   var holder: ModuleHolding? { get }
   var router: Router? { get }
-  
+
+  @MainActor
   init(holder: ModuleHolding?, context: Context, component: ModuleComponent)
   func onActive()
 }

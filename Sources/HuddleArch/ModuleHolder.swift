@@ -50,6 +50,7 @@ open class ModuleHolderModule<Context: ModuleHoldingContext, C: Component, Route
   
   public var router: Router?
   
+  @MainActor
   public required init(holder: (any ModuleHolding)?, context: Context, component: C) {
     super.init(holder: holder)
   }
@@ -69,6 +70,7 @@ open class ModuleHolder: ModuleHolding {
     }
   }
   
+  @MainActor
   public init(holder: ModuleHolding? = nil) {
     self.holder = holder
   }
