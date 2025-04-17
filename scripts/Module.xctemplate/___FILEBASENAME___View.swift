@@ -19,6 +19,9 @@ public struct ___VARIABLE_productName:identifier___View: View {
     VStack {
       Text("Some Text")
     }
+    .fullscreen()
+    .applyThemeBackground()
+    .logImpression(name: "___VARIABLE_productName:identifier___View")
   }
 }
 

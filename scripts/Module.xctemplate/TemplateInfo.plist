@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>MainTemplateFiles</key>
+	<string>___FILEBASENAME___.swift</string>
+	<key>DefaultCompletionName</key>
+	<string>Module</string>
 	<key>Kind</key>
 	<string>Xcode.IDEFoundation.TextSubstitutionFileTemplateKind</string>
 	<key>Platforms</key>
@@ -15,50 +19,48 @@
 	<key>Options</key>
 	<array>
 		<dict>
+			<key>Description</key>
+			<string>The name of the Module you&apos;d like to create, excluding the `Module` suffix.</string>
 			<key>Identifier</key>
 			<string>productName</string>
+			<key>Name</key>
+			<string>Module name:</string>
 			<key>NotPersisted</key>
 			<string>true</string>
 			<key>Required</key>
-			<true/>
-			<key>Name</key>
-			<string>Module name:</string>
-			<key>Description</key>
-			<string>The name of the Module you&apos;d like to create, excluding the `Module` suffix.</string>
+			<string>true</string>
 			<key>Type</key>
 			<string>text</string>
-			<key>Default</key>
-			<string>Module</string>
 		</dict>
 		<dict>
 			<key>Identifier</key>
 			<string>parentModuleHolderContextClass</string>
 			<key>Required</key>
-			<true/>
+			<string>true</string>
 			<key>Name</key>
 			<string>ModuleHolderContext class name:</string>
-			<key>NotPersisted</key>
-			<string>true</string>
 			<key>Description</key>
 			<string>The ModuleHolderContext class for where this module will belong</string>
 			<key>Type</key>
 			<string>text</string>
 			<key>Default</key>
 			<string>RootModuleHolderContext</string>
+			<key>NotPersisted</key>
+			<string>true</string>
 		</dict>
 		<dict>
 			<key>Identifier</key>
 			<string>parentModuleHolderClassName</string>
 			<key>Required</key>
 			<true/>
-			<key>NotPersisted</key>
-			<string>true</string>
 			<key>Name</key>
 			<string>ModuleHolder class name:</string>
 			<key>Description</key>
 			<string>The ModuleHolder class for where this module will belong</string>
 			<key>Type</key>
 			<string>text</string>
+			<key>NotPersisted</key>
+			<string>true</string>
 			<key>Default</key>
 			<string>RootModuleHolder</string>
 		</dict>
@@ -67,10 +69,10 @@
 			<string>parentComponentClass</string>
 			<key>Required</key>
 			<true/>
-			<key>NotPersisted</key>
-			<string>true</string>
 			<key>Name</key>
 			<string>The parent component class name:</string>
+			<key>NotPersisted</key>
+			<string>true</string>
 			<key>Description</key>
 			<string>The parent component class for where this module will belong</string>
 			<key>Type</key>
@@ -83,9 +85,7 @@
 	<string>7</string>
 	<key>Summary</key>
 	<string>Module</string>
-	<key>MainTemplateFiles</key>
-	<string>___FILEBASENAME___.swift</string>
-	<key>DefaultCompletionName</key>
-	<string>Module</string>
+	<key>Description</key>
+	<string>Module classes.</string>
 </dict>
 </plist>
