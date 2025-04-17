@@ -26,6 +26,7 @@ let package = Package(
     ],
     dependencies: [
       .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
+      .package(url: "https://github.com/wvabrinskas/Logger.git", from: "1.0.7"),
     ],
     targets: [
       // Targets are the basic building blocks of a package, defining a module or a test suite.
