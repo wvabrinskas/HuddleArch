@@ -51,6 +51,7 @@ open class Flow<Context, FlowComponent: ComponentProviding, ResultObject: FlowRe
     for step in steps {
       if step.isApplicable(context: context) {
         resultToReturn = await step.run(flowResult: resultToReturn)
+        step.onNext()
         result = resultToReturn
       }
     }
@@ -72,6 +73,7 @@ open class Flow<Context, FlowComponent: ComponentProviding, ResultObject: FlowRe
     for step in steps {
       if step.isApplicable(context: context) {
         await step.run()
+        step.onNext()
       }
     }
   }
