@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:HuddleArch}",
+      "name": "Debug HuddleMacrosClient",
+      "program": "${workspaceFolder:HuddleArch}/.build/debug/HuddleMacrosClient",
+      "preLaunchTask": "swift: Build Debug HuddleMacrosClient"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:HuddleArch}",
+      "name": "Release HuddleMacrosClient",
+      "program": "${workspaceFolder:HuddleArch}/.build/release/HuddleMacrosClient",
+      "preLaunchTask": "swift: Build Release HuddleMacrosClient"
+    }
+  ]
+}

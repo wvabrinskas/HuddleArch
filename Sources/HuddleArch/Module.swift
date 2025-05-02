@@ -17,6 +17,7 @@ public protocol Module {
 
   @MainActor
   init(holder: ModuleHolding?, context: Context, component: ModuleComponent)
+  @MainActor
   func onActive()
 }
 
@@ -29,6 +30,7 @@ open class ModuleObject<Context: ModuleHoldingContext, ModuleComponent: Componen
     self.holder = holder
   }
   
+  @MainActor
   open func onActive() {
     // no op. Override to perform action when Holder is ready
   }

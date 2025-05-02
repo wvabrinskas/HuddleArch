@@ -7,6 +7,23 @@
       {
         "basedOn" : null,
         "packageRef" : {
+          "identity" : "logger",
+          "kind" : "remoteSourceControl",
+          "location" : "https://github.com/wvabrinskas/Logger.git",
+          "name" : "Logger"
+        },
+        "state" : {
+          "checkoutState" : {
+            "revision" : "72e4516de6c671d00588031098438a933ee0d370",
+            "version" : "1.0.7"
+          },
+          "name" : "sourceControlCheckout"
+        },
+        "subpath" : "Logger"
+      },
+      {
+        "basedOn" : null,
+        "packageRef" : {
           "identity" : "swift-syntax",
           "kind" : "remoteSourceControl",
           "location" : "https://github.com/swiftlang/swift-syntax.git",
