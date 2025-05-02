@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>MainTemplateFiles</key>
+	<string>___FILEBASENAME___Builder.swift</string>
+	<key>DefaultCompletionName</key>
+	<string>Maintenance</string>
+	<key>Kind</key>
+	<string>Xcode.IDEFoundation.TextSubstitutionFileTemplateKind</string>
+	<key>Platforms</key>
+	<array>
+		<string>com.apple.platform.iphoneos</string>
+	</array>
+	<key>AllowedTypes</key>
+	<array>
+		<string>public.swift-source</string>
+	</array>
+	<key>Options</key>
+	<array>
+		<dict>
+			<key>Description</key>
+			<string>The name of the Module you'd like to create, excluding the `Module` suffix.</string>
+			<key>Identifier</key>
+			<string>productName</string>
+			<key>Name</key>
+			<string>Module name:</string>
+			<key>NotPersisted</key>
+			<string>true</string>
+			<key>Required</key>
+			<string>true</string>
+			<key>Type</key>
+			<string>text</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>parentModuleHolderContextClass</string>
+			<key>Required</key>
+			<string>true</string>
+			<key>Name</key>
+			<string>ModuleHolderContext class name:</string>
+			<key>Description</key>
+			<string>The ModuleHolderContext class for where this module will belong</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>Default</key>
+			<string>RootModuleHolderContext</string>
+			<key>NotPersisted</key>
+			<string>true</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>parentModuleHolderClassName</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>ModuleHolder class name:</string>
+			<key>Description</key>
+			<string>The ModuleHolder class for where this module will belong</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>NotPersisted</key>
+			<string>true</string>
+			<key>Default</key>
+			<string>RootModuleHolder</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>parentComponentClass</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>The parent component class name:</string>
+			<key>NotPersisted</key>
+			<string>true</string>
+			<key>Description</key>
+			<string>The parent component class for where this module will belong</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>Default</key>
+			<string>RootComponent</string>
+		</dict>
+	</array>
+	<key>SortOrder</key>
+	<string>7</string>
+	<key>Summary</key>
+	<string>Maintenance Module</string>
+	<key>Description</key>
+	<string>Maintenance Module classes with HuddleArch architecture.</string>
+</dict>
+</plist>
