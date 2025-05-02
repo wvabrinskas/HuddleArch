@@ -16,9 +16,9 @@ public protocol ___VARIABLE_productName___StepComponent: FlowStepComponent {
 public final class ___VARIABLE_productName___StepComponentImpl: Component, ___VARIABLE_productName___StepComponent {
 }
 
-public class ___VARIABLE_productName___Step: FlowStep<___VARIABLE_flowName___FlowFlowContext, ___VARIABLE_flowName___FlowComponentImpl, EmptyResult> {
+public class ___VARIABLE_productName___Step: FlowStep<___VARIABLE_flowName___FlowContext, ___VARIABLE_flowName___FlowComponentImpl, EmptyResult> {
   
-  public override init<T>(flow: Flow<___VARIABLE_flowName___FlowFlowContext, ___VARIABLE_flowName___FlowComponentImpl, EmptyResult>, context: ___VARIABLE_flowName___FlowFlowContext, component: T) where T : FlowStepComponent {
+  public override init<T>(flow: Flow<___VARIABLE_flowName___FlowContext, ___VARIABLE_flowName___FlowComponentImpl, EmptyResult>, context: ___VARIABLE_flowName___FlowContext, component: T) where T : FlowStepComponent {
     super.init(flow: flow, context: context, component: component)
   }
   

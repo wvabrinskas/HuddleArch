@@ -9,11 +9,11 @@ import Foundation
 import HuddleArch
 import HuddleMacros
 
-public protocol ___VARIABLE_productName___FlowSupporting: Flow<___VARIABLE_productName___FlowFlowContext, ___VARIABLE_productName___FlowComponentImpl, EmptyResult> {
+public protocol ___VARIABLE_productName___FlowSupporting: Flow<___VARIABLE_productName___FlowContext, ___VARIABLE_productName___FlowComponentImpl, EmptyResult> {
 
 }
 
-public struct ___VARIABLE_productName___FlowFlowContext {
+public struct ___VARIABLE_productName___FlowContext {
 
 }
 
@@ -25,7 +25,7 @@ public protocol ___VARIABLE_productName___FlowComponent: Component {
 public final class ___VARIABLE_productName___FlowComponentImpl: Component, ___VARIABLE_productName___FlowComponent {
 }
 
-public final class ___VARIABLE_productName___Flow: Flow<___VARIABLE_productName___FlowFlowContext, ___VARIABLE_productName___FlowComponentImpl, EmptyResult>,
+public final class ___VARIABLE_productName___Flow: Flow<___VARIABLE_productName___FlowContext, ___VARIABLE_productName___FlowComponentImpl, EmptyResult>,
                                    ___VARIABLE_productName___FlowSupporting {
   
   deinit {
@@ -41,7 +41,7 @@ public final class ___VARIABLE_productName___Flow: Flow<___VARIABLE_productName_
     // no op
   }
   
-  override public init(context: ___VARIABLE_productName___FlowFlowContext,
+  override public init(context: ___VARIABLE_productName___FlowContext,
                      component: ___VARIABLE_productName___FlowComponentImpl,
                      result: (@Sendable () -> EmptyResult?)? = nil) {
     super.init(context: context, component: component, result: result)
