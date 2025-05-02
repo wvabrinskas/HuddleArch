@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Kind</key>
+	<string>Xcode.IDEKit.TextSubstitutionFileTemplateKind</string>
+	<key>Description</key>
+	<string>A Flow Step file for Protein Bar</string>
+	<key>Summary</key>
+	<string>A Flow Step file for Protein Bar</string>
+	<key>SortOrder</key>
+	<string>2</string>
+	<key>DefaultCompletionName</key>
+	<string>Step</string>
+	<key>MainTemplateFile</key>
+	<string>___FILEBASENAME___.swift</string>
+	<key>Options</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>productName</string>
+			<key>Name</key>
+			<string>Step Name:</string>
+			<key>Description</key>
+			<string>The name of the step</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>Required</key>
+			<string>YES</string>
+			<key>Default</key>
+			<string>Custom</string>
+		</dict>
+		<dict>
+			<key>Identifier</key>
+			<string>flowName</string>
+			<key>Name</key>
+			<string>Flow Name:</string>
+			<key>Description</key>
+			<string>The name of the parent flow</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>Required</key>
+			<string>YES</string>
+			<key>Default</key>
+			<string>Custom</string>
+		</dict>
+	</array>
+</dict>
+</plist>
