@@ -46,7 +46,7 @@ open class Flow<Context, FlowComponent: ComponentProviding, ResultObject: FlowRe
   }
   
   open func runResult() async -> ResultObject? {
-    var resultToReturn: ResultObject?
+    var resultToReturn: ResultObject? = result
     
     for step in steps {
       if step.isApplicable(context: context) {
