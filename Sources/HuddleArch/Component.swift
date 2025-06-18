@@ -41,7 +41,7 @@ private final class DependencyStore {
 }
 
 @dynamicMemberLookup
-open class Component: ComponentProviding {
+nonisolated open class Component: ComponentProviding {
   public let parent: Component?
 
   private var dependencyStore: DependencyStore = .init()
@@ -50,11 +50,11 @@ open class Component: ComponentProviding {
     dependencyStore = .init()
   }
   
-  public init(parent: Component) {
+  nonisolated public init(parent: Component) {
     self.parent = parent
   }
   
-  public init(parent: Component?) {
+  nonisolated public init(parent: Component?) {
     self.parent = parent
   }
 
@@ -87,7 +87,7 @@ open class Component: ComponentProviding {
   
   public func shared<T>(_ block: () -> T) -> T {
     if let oldDep: T? = dependencyStore[dynamicMember: String(describing: T.self)], oldDep != nil {
-      return oldDep as? T ?? block()
+      return oldDep ?? block()
     }
       
     let dep = block()

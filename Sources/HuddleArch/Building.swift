@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol ViewComponent {
+nonisolated public protocol ViewComponent {
   var moduleHolder: ModuleHolding? { get }
 }
 
@@ -17,7 +17,7 @@ public protocol ViewBuilding {
   @MainActor static func buildRouter(component: BuilderComponent) -> BuilderRouter
 }
 
-public protocol ModuleBuilder {
+nonisolated public protocol ModuleBuilder {
   associatedtype M: Module
   @MainActor
   static func build(parentComponent: Component, holder: ModuleHolding?, context: M.Context) -> M

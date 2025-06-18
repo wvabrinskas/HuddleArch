@@ -26,7 +26,7 @@ public protocol Routing: AnyObject {
 @MainActor
 open class Router: Routing {
   
-  public nonisolated init() {
+  public init() {
     // no op
   }
   
