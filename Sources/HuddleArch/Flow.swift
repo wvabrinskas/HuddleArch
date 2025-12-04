@@ -45,6 +45,10 @@ open class Flow<Context, FlowComponent: ComponentProviding, ResultObject: FlowRe
     self.result = result?()
   }
   
+  deinit {
+    steps = []
+  }
+  
   open func runResult() async -> ResultObject? {
     var resultToReturn: ResultObject? = result
     
