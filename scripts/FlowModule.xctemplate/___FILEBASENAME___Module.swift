@@ -33,10 +33,7 @@ public final class ___VARIABLE_productName:identifier___Module: Flow<___VARIABLE
   public weak var router: ___VARIABLE_productName:identifier___Router?
   public var viewModel: ___VARIABLE_productName:identifier___ViewModel = ___VARIABLE_productName:identifier___ViewModel()
   
-  deinit {
-    // remove steps as this can cause a memory leak
-    steps = []
-  }
+  /// Module 
   
   public func onActive() {
     // no op
@@ -45,6 +42,8 @@ public final class ___VARIABLE_productName:identifier___Module: Flow<___VARIABLE
   public func onAppear() {
     // no op
   }
+  
+  /// Flow
   
   @MainActor
   public override func runIsolated() async {

@@ -27,20 +27,6 @@ public final class ___VARIABLE_productName___FlowComponentImpl: Component, ___VA
 
 public final class ___VARIABLE_productName___Flow: Flow<___VARIABLE_productName___FlowContext, ___VARIABLE_productName___FlowComponentImpl, EmptyResult>,
                                    ___VARIABLE_productName___FlowSupporting {
-  
-  deinit {
-    // remove steps as this can cause a memory leak
-    steps = []
-  }
-  
-  public func onActive() {
-    // no op
-  }
-  
-  public func onAppear() {
-    // no op
-  }
-  
   override public init(context: ___VARIABLE_productName___FlowContext,
                      component: ___VARIABLE_productName___FlowComponentImpl,
                      result: (@Sendable () -> EmptyResult?)? = nil) {
