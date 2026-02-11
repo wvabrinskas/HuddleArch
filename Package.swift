@@ -33,7 +33,7 @@ let package = Package(
       // Targets can depend on other targets in this packa∫ge and products from dependencies.
       .target(name: "HuddleArch"),
       
-      .target(name: "HuddleMacros", dependencies: ["HuddleMacrosMacros"]),
+        .target(name: "HuddleMacros", dependencies: ["HuddleMacrosMacros", "HuddleArch"]),
       
       .macro(
         name: "HuddleMacrosMacros",
